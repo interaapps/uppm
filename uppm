@@ -1,0 +1,354 @@
+#!/usr/bin/env php
+<?php
+$uppmlock = [];
+if (file_exists("uppm.locks.json"))
+    $uppmlock = json_decode(file_get_contents("uppm.locks.json"));
+
+$uppmconf = [];
+if (file_exists("uppm.json"))
+    $uppmconf = json_decode(file_get_contents("uppm.json"));
+
+define("UPPMINFO", [
+    "version"=>"1.0"
+]);
+
+?>
+<?php
+/**
+ * - ULOLEPHPPACKAGEMANAGER -
+ * 
+ * Tools
+ * 
+ * @author InteraApps
+ */
+
+ class Tools {
+
+    public static function getStringBetween($string, $start, $end){
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        if ($ini == 0) return '';
+        $ini += strlen($start);
+        if ($end=="") {
+          return substr($string, $ini, strlen($string));
+        }
+        $len = strpos($string, $end, $ini) - $ini;
+        return substr($string, $ini, $len);
+    }
+
+    public static function deleteDir($dirPath) {
+        if (!is_dir($dirPath))
+            return;
+        
+        $files = scandir($dirPath);
+        foreach ($files as $file) 
+            if ($file != "." && $file != "..") {
+                if (is_dir($dirPath."/".$file)) {
+                    self::deleteDir($dirPath."/".$file);
+                } else {
+                    if (!($dirPath=="./" && $file=="uppm"))
+                        unlink($dirPath."/".$file);
+                }
+            }
+            
+        rmdir($dirPath);
+    }
+
+ }
+
+ ?>
+<?php
+/**
+ * - ULOLEPHPPACKAGEMANAGER -
+ * 
+ * INIT
+ * 
+ * @author InteraApps
+ */
+
+ class Init {
+
+    public static function initFromCLI() {
+        $prefix = "\nUPPM INIT: ";
+        if (file_exists("uppm.json")) {
+            echo $prefix."uppm.json already initialized! Do you want to reinitialize it? (yes, y)";
+
+        }
+        echo $prefix."Project name (Only lower case, numbers and underscores): ";
+        $name = readline();
+        if (!preg_match('#^[a-z0-9_]+$#', $name) && $name != "") {
+            return Colors::PREFIX_ERROR."Only lower case, numbers and underscores are allowed!\n";
+        }
+
+        echo $prefix."Project version (Numbers and dots): ";
+        $version = readline();
+        if (!preg_match('#^[0-9.]+$#', $version) && $version != "") {
+            return Colors::PREFIX_ERROR."Only numbers and dots!\n";
+        }
+
+        echo $prefix."Description [OPTIONAL]: ";
+        $description = readline();
+
+        echo $prefix."Author [OPTIONAL]: ";
+        $author = readline();
+
+        echo $prefix."Keywords (Split with a komma) [OPTIONAL]: ";
+        $keywords = explode(',', readline());
+
+        self::initProject($name, $version, $description, $author, $keywords);
+        
+    }
+
+    public static function initProject(
+        $name="uppmproject",
+        $version="1.0",
+        $description="",
+        $author= "",
+        $keywords=[]
+    ) {
+        file_put_contents("uppm.json", json_encode([
+            "name"        => $name,
+            "version"     => $version,
+            "description" => $description,
+            "author"      => $author,
+            "keywords"    => $keywords,
+            "modules"     => [],
+            "initscripts" => []
+        ], JSON_PRETTY_PRINT));
+    }
+
+ }
+ ?>
+<?php
+/**
+ * - ULOLEPHPPACKAGEMANAGER -
+ * 
+ * Install
+ * 
+ * @author InteraApps
+ */
+
+ class Install {
+
+    private $downloadUrl,
+            $type,
+            $enddir,
+            $webContext;
+
+    public function __construct($name, $version) {
+
+        if ($name == ":github"){
+            $this->webContext = stream_context_create([
+                "http" => [
+                    "method" => "GET",
+                    "header" => "User-Agent: request"
+                ]
+            ]);
+            $branch = "master";
+            $type = "web";
+            if (strpos($version, ">") !== false) {
+                $branch = (">".Tools::getStringBetween($version, ">", ""));
+                $version = str_replace( $branch, "", $version);
+            }
+            $this->downloadUrl = "https://api.github.com/repos/".$version."/zipball/".$branch;    
+        } elseif($name == ":web") {
+            $type = "web";
+            $this->downloadUrl = $version;
+        } else {
+            $this->type = "normal";
+        }
+    }
+
+    public function download() {
+        echo "\nDownloading (This may take a while)...\n";
+        file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
+        if (class_exists('ZipArchive')) {
+            $zip = new ZipArchive;
+            $res = $zip->open("UPPMtemp_module.zip");
+            if ($res === true) {
+                Tools::deleteDir("UPPMtempdir");
+                $zip->extractTo("UPPMtempdir");
+                $zip->close();
+
+                $files = scandir('UPPMtempdir');
+                $dirInZip = false;
+
+                $count = (function($files) {
+                    $counter = 0;
+                    foreach ($files as $f)
+                        if ($f != "." && $f != "..")
+                            $counter++;
+                    return $counter;
+                })($files);
+
+                if (file_exists("UPPMtempdir/uppm.json"))
+                    $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/uppm.json"));
+
+                if ($count == 1) {
+                    foreach($files as $file) {
+                        if (is_dir("UPPMtempdir/".$file)) {
+                            if ($file != "." && $file != "..") {
+                                $dirInZip = $file;
+                                if (file_exists("UPPMtempdir/".$file."/uppm.json"))
+                                    $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/".$file."/uppm.json"));
+                            }
+                        }
+                    }
+                }
+
+                if (isset($tempuppmconf->directory))
+                    $enddir = $tempuppmconf->directory;
+                elseif (isset($tempuppmconf->name))
+                    $enddir = "modules/".$tempuppmconf->name;
+                if (is_dir($enddir))
+                    Tools::deleteDir($enddir);
+                
+                if (!is_dir("modules"))
+                    mkdir("modules");
+
+                if ($dirInZip !== false) {
+                    rename("UPPMtempdir/".$dirInZip, $enddir);
+                } else
+                    rename("UPPMtempdir", $enddir);
+                
+
+                echo "Done";
+            }
+        }
+    }
+
+ }
+
+ ?>
+<?php
+/**
+ * - ULOLEPHPPACKAGEMANAGER -
+ * 
+ * Colors
+ * Using colors in the CLI!
+ * 
+ * @author InteraApps
+ */
+
+ class Colors {
+     public const HEADER = "\033[95m",
+                  OKBLUE = "\033[94m",
+                  OKGREEN = "\033[92m",
+                  WARNING = "\033[93m",
+                  FAIL = "\033[91m",
+                  ENDC = "\033[0m",
+                  BOLD = "\033[1m",
+                  UNDERLINE = "\033[4m",
+                  RED = "\033[31m",
+                  BLUE = "\033[34m",
+                  YELLOW = "\033[33m",
+                  TURQUIOUS = "\033[36m",
+                  GREEN = "\033[32m",
+                  BLINK = "\033[5m",
+                  BG_RED = "\033[41m",
+                  BG_BLUE = "\033[44m",
+                  BG_GREEN = "\033[42m",
+                  BG_YELLOW = "\033[43m",
+                  BG_BLACK = "\033[40m";
+        
+    public const PREFIX_DONE = "\033[92m᮰ Done\033[0m: ",
+                 PREFIX_WARN = "\033[93m᮰ WARNING\033[0m: ",
+                 PREFIX_ERROR = "\033[91m᮰ ERROR\033[0m: ";
+ }
+
+ ?>
+<?php
+/**
+ * - ULOLEPHPPACKAGEMANAGER -
+ * 
+ * CLI
+ * 
+ * @author InteraApps
+ */
+
+ class CLI {
+    public $commands;
+    public $descriptions;
+    /**
+     * Change the not found errormessage
+     */
+    public $errorMessage;
+    /** 
+     * Shows a list with all commands on function not found error
+     */
+    public $showArgsOnError=true;
+
+    
+    /**
+     * Register a new command
+     * @param String function-name (Command)
+     * @param Function function (example:function() {return "Hello world";})
+     * @param String (Optional) Description
+     */
+    public function register(string $name, $func, string $description="") {
+        $this->commands[$name] = $func;
+        $this->descriptions[$name] = $description;
+    }
+
+    /**
+     * Runs a command
+     */
+    public function run($run) {
+        if (isset($this->commands[$run])) {
+            $function = ($this->commands[$run]);
+            echo $function($run);
+        } else {
+            if ($this->errorMessage != null) 
+                echo $this->errorMessage;
+            else
+                echo Colors::PREFIX_ERROR."Function \"".$run."\" not found!\n";
+            
+            
+            if ($this->showArgsOnError) {
+                $showArgs = Colors::PREFIX_DONE."Those are some valid functions: ";
+                foreach ($this->commands as $command=>$value) {
+                    $showArgs .= "\n  \033[92m- \033[0m".$command.": ".$this->descriptions[$command];
+                }
+                echo $showArgs."\n";
+            }
+
+        }
+    }
+ }
+
+ ?>
+<?php 
+
+$CLI = new CLI(1);
+
+$CLI->register("-v", function() {
+    return UPPMINFO["version"]."\n";
+}, "See UPPMs version");
+
+$CLI->register("init", function() {
+    return Init::initFromCLI();
+}, "Initializing Project");
+
+$CLI->register("install", function() {
+    return "Hi";
+}, "Install a new package
+    Types:
+      - 'github:' Downloads a project from github (Example: 'user/project' or 'user/project:master')
+      - 'web:' Downloads a project from web (Example: https://mywebsite.com/test.zip)
+      - 'local:' Unzips a local file 'file.zip'");
+
+$CLI->register("update", function() {
+    global $uppmconf;
+    foreach ($uppmconf->modules as $name=>$version) {
+        $resource = new Install($name, $version);
+        $resource->download();
+    }
+}, "Updating all");
+
+
+if (isset($argv[1]))
+    $CLI->run($argv[1], $argv);
+else
+    echo COLORS::PREFIX_ERROR."Command not found\n";
+
+?>

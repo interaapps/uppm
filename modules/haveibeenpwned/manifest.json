@@ -1,0 +1,10 @@
+{
+    "name":"HaveIBeenPwned API",
+    "version": "1.0",
+    "authors": [
+        {
+            "name": "JulianFun123",
+            "email": "support@interaapps.de"
+        }
+    ]
+}

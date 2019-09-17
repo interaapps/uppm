@@ -1,0 +1,9 @@
+{
+    "name": "haveibeenpwned",
+    "version": "1.0",
+    "description": "UPPM is a package manager",
+    "author": "InteraApps",
+    "keywords": [],
+    "modules": {},
+    "namespaces": {}
+}
