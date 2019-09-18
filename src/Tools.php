@@ -20,13 +20,13 @@
         return substr($string , ($start == "") ? 0 : $ini , $len);
     }
 
-    public static function deleteDir($dirPath) {
+    public static function deleteDir($dirPath, $ignore="NON++++++++++++NON+++++++++++++++NON") {
         if (!is_dir($dirPath))
             return;
         
         $files = scandir($dirPath);
         foreach ($files as $file) 
-            if ($file != "." && $file != "..") {
+            if ($file != "." && $file != ".." && $file != $ignore) {
                 if (is_dir($dirPath."/".$file)) {
                     self::deleteDir($dirPath."/".$file);
                 } else {
@@ -66,6 +66,24 @@
 
          flush();
 
+     }
+
+
+     function copyDir($src, $dst) {
+         $dir = opendir($src);
+         @mkdir($dst);
+
+         while( $file = readdir($dir) ) {
+             if (( $file != '.' ) && ( $file != '..' )) {
+                 if ( is_dir($src . '/' . $file) ) {
+                     self::copyDir($src . '/' . $file, $dst . '/' . $file);
+                 }
+                 else {
+                     copy($src . '/' . $file, $dst . '/' . $file);
+                 }
+             }
+         }
+         closedir($dir);
      }
 
  }

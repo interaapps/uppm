@@ -94,17 +94,34 @@
                     $enddir = $tempuppmconf->directory;
                 elseif (isset($tempuppmconf->name))
                     $enddir = "modules/".$tempuppmconf->name;
-                if (is_dir($enddir))
+                if (is_dir($enddir) && $enddir!="./" )
                     Tools::deleteDir($enddir);
                 
                 if (!is_dir("modules"))
                     mkdir("modules");
 
+                $copy = false;
+
+                if ($output && (isset($tempuppmconf->directory) ? $tempuppmconf->directory : "") == "./") {
+                    echo "\nThis module will be moved to this directory: ".dirname(__FILE__)." Do you want that? [yes,NO]";
+                    if (strtolower(readline()) != "yes")
+                        die("Cancelt");
+                    $copy = true;
+                    $enddir = dirname(__FILE__);
+                }
+
                 if ($dirInZip !== false) {
-                    rename("UPPMtempdir/".$dirInZip, $enddir);
-                } else
-                    rename("UPPMtempdir", $enddir);
-                
+                    if ($copy)
+                        Tools::copyDir("UPPMtempdir/".$dirInZip, $enddir);
+                    else
+                        rename("UPPMtempdir/".$dirInZip, $enddir);
+                } else {
+                    if ($copy)
+                        Tools::copyDir("UPPMtempdir", $enddir);
+                    else
+                        rename("UPPMtempdir", $enddir);
+                }
+
                 if (isset($tempuppmconf->modules)) {
                     foreach ($tempuppmconf->modules as $name=>$version) {
                         $resource = new Install($name, $version);
