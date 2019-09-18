@@ -242,11 +242,11 @@ define("UPPMINFO", [
             ]);
             $branch = "master";
             $this->type = "web";
-            if (strpos($name, ">") !== false) {
-                $branch = (">".Tools::getStringBetween($name, ">", ""));
-                $this->version = str_replace( $branch, "", $name);
+            if (strpos($name, "+") !== false) {
+                $branch = ("+".Tools::getStringBetween($name, "+", ""));
+                $this->name= str_replace( $branch, "", $name);
             }
-            $this->downloadUrl = "https://api.github.com/repos/".$name."/zipball/".$branch;    
+            $this->downloadUrl = "https://api.github.com/repos/".$this->name."/zipball/".str_replace("+", "", $branch);
         } elseif($version == ":web") {
             $this->type = "web";
             $this->downloadUrl = $name;
@@ -364,15 +364,10 @@ define("UPPMINFO", [
     }
 
     public static function installNew($name) {
-        echo "y:".$name;
-        //exit();
         if (strpos($name, ":") !== false) {
-            echo "x\n\n";
             $type = Tools::getStringBetween($name, "", ":");
             $name = Tools::getStringBetween($name, ":", "");
             $config = Configs::getNPPMFile();
-            echo "-\n\n";
-            echo "asd".$type;
             if ($type=="github") {
                 if (is_array($config->modules))
                     $config->modules = [$name=>":github"];

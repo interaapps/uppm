@@ -29,11 +29,11 @@
             ]);
             $branch = "master";
             $this->type = "web";
-            if (strpos($name, ">") !== false) {
-                $branch = (">".Tools::getStringBetween($name, ">", ""));
-                $this->version = str_replace( $branch, "", $name);
+            if (strpos($name, "+") !== false) {
+                $branch = ("+".Tools::getStringBetween($name, "+", ""));
+                $this->name= str_replace( $branch, "", $name);
             }
-            $this->downloadUrl = "https://api.github.com/repos/".$name."/zipball/".$branch;    
+            $this->downloadUrl = "https://api.github.com/repos/".$this->name."/zipball/".str_replace("+", "", $branch);
         } elseif($version == ":web") {
             $this->type = "web";
             $this->downloadUrl = $name;

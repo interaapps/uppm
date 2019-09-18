@@ -3,6 +3,8 @@
     "cli_scripts": {},
     "directnamespaces": {},
     "packages": {
-
+        "interaapps\/haveibeenpwned-ulole-module": "interaapps\/haveibeenpwned-ulole-module+master",
+        "interaapps\/haveibeenpwned-ulole-module+master": "interaapps\/haveibeenpwned-ulole-module+master",
+        ":github": "interaapps\/haveibeenpwned-ulole-module"
     }
 }
