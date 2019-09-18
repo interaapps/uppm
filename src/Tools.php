@@ -53,8 +53,8 @@
          $status_bar="\r┋";
          $status_bar.=str_repeat(Colors::GREEN."▉".Colors::ENDC, $bar);
          if($bar<$size){
-             $status_bar.=">";
-             $status_bar.=str_repeat(" ", $size-$bar);
+             $status_bar.=Colors::YELLOW."░".Colors::ENDC;
+             $status_bar.=str_repeat(Colors::YELLOW."░".Colors::ENDC, $size-$bar);
          } else {
              $status_bar .= Colors::GREEN."▉".Colors::ENDC;
          }
