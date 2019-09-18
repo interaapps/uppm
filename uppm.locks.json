@@ -3,7 +3,6 @@
     "cli_scripts": {},
     "directnamespaces": {},
     "packages": {
-        "1.0": "ulole-phpmailer",
-        ":github": "interaapps\/haveibeenpwned-ulole-module"
+
     }
 }
