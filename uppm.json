@@ -1,16 +1,14 @@
 {
     "name": "uppm",
     "version": "1.0",
-    "description": "UPPM is a package manager",
-    "author": "InteraApps",
+    "description": "",
+    "author": "",
     "keywords": [
-        "Package Manger",
-        "PHP"
+        ""
     ],
     "modules": {
-        ":github": "interaapps/haveibeenpwned-ulole-module"
+        "ulole-phpmailer": "1.0",
+        "interaapps\/haveibeenpwned-ulole-module": ":github"
     },
-    "namespaces": {
-        
-    }
+    "initscripts": []
 }

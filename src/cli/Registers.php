@@ -11,7 +11,8 @@ $CLI->register("init", function() {
 }, "Initializing Project");
 
 $CLI->register("install", function() {
-    return "Hi";
+    global $argv;
+    return Install::installNew($argv[2]);
 }, "Install a new package
     Types:
       - 'github:' Downloads a project from github (Example: 'user/project' or 'user/project:master')
@@ -20,6 +21,9 @@ $CLI->register("install", function() {
 
 $CLI->register("update", function() {
     global $uppmconf;
+    $lockFile = Configs::getLockFile();
+    $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
+    file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
     foreach ($uppmconf->modules as $name=>$version) {
         $resource = new Install($name, $version);
         $resource->download();
@@ -31,5 +35,9 @@ if (isset($argv[1]))
     $CLI->run($argv[1], $argv);
 else
     echo COLORS::PREFIX_ERROR."Command not found\n";
-
+$lockFile = Configs::getLockFile();
+if (isset($lockFile->packages->{"TEMPNULL-------"})) {
+    unset($lockFile->packages->{"TEMPNULL-------"});
+    file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+}
 ?>

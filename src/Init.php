@@ -47,15 +47,13 @@
         $author= "",
         $keywords=[]
     ) {
-        file_put_contents("uppm.json", json_encode([
-            "name"        => $name,
-            "version"     => $version,
-            "description" => $description,
-            "author"      => $author,
-            "keywords"    => $keywords,
-            "modules"     => [],
-            "initscripts" => []
-        ], JSON_PRETTY_PRINT));
+        $file = Configs::getNPPMFile();
+        $file->name=$name;
+        $file->version=$version;
+        $file->description=$description;
+        $file->author   =$author;
+        $file->keywords =$keywords;
+        file_put_contents("uppm.json", json_encode($file, JSON_PRETTY_PRINT));
     }
 
  }

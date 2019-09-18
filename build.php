@@ -7,6 +7,7 @@ $files = [
 
     "Tools.php",
     "Init.php",
+    "Configs.php",
     "Install.php",
 
     "cli/Colors.php",

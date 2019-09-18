@@ -12,11 +12,15 @@
     private $downloadUrl,
             $type,
             $enddir,
-            $webContext;
+            $webContext,
+            $name,
+            $version;
 
-    public function __construct($name, $version) {
-
-        if ($name == ":github"){
+    public function __construct($name, $version, $output=true) {
+        $this->name    = $name;
+        $this->version = $version;
+        if ($output) if ($output) Tools::statusIndicator(0, 100);
+        if ($version == ":github"){
             $this->webContext = stream_context_create([
                 "http" => [
                     "method" => "GET",
@@ -24,29 +28,38 @@
                 ]
             ]);
             $branch = "master";
-            $type = "web";
-            if (strpos($version, ">") !== false) {
-                $branch = (">".Tools::getStringBetween($version, ">", ""));
-                $version = str_replace( $branch, "", $version);
+            $this->type = "web";
+            if (strpos($name, ">") !== false) {
+                $branch = (">".Tools::getStringBetween($name, ">", ""));
+                $this->version = str_replace( $branch, "", $name);
             }
-            $this->downloadUrl = "https://api.github.com/repos/".$version."/zipball/".$branch;    
-        } elseif($name == ":web") {
-            $type = "web";
-            $this->downloadUrl = $version;
-        } else {
+            $this->downloadUrl = "https://api.github.com/repos/".$name."/zipball/".$branch;    
+        } elseif($version == ":web") {
+            $this->type = "web";
+            $this->downloadUrl = $name;
+        } elseif(UPPMINFO["server"] !== false) {
+            $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
+            if ($list->{$this->name}->{$this->version} != null) {
+                $this->downloadUrl = $list->{$this->name}->{$this->version};
+            }
             $this->type = "normal";
+
         }
     }
 
-    public function download() {
-        echo "\nDownloading (This may take a while)...\n";
+    public function download($output=true) {
+        if ($output) Tools::statusIndicator(5, 100);
         file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
         if (class_exists('ZipArchive')) {
             $zip = new ZipArchive;
+            if ($output) Tools::statusIndicator(10, 100);
             $res = $zip->open("UPPMtemp_module.zip");
             if ($res === true) {
+                if ($output) Tools::statusIndicator(20, 100);
                 Tools::deleteDir("UPPMtempdir");
+                if ($output) Tools::statusIndicator(25, 100);
                 $zip->extractTo("UPPMtempdir");
+                if ($output) Tools::statusIndicator(30, 100);
                 $zip->close();
 
                 $files = scandir('UPPMtempdir');
@@ -75,6 +88,8 @@
                     }
                 }
 
+                if ($output) Tools::statusIndicator(50, 100);
+
                 if (isset($tempuppmconf->directory))
                     $enddir = $tempuppmconf->directory;
                 elseif (isset($tempuppmconf->name))
@@ -90,8 +105,70 @@
                 } else
                     rename("UPPMtempdir", $enddir);
                 
+                if (isset($tempuppmconf->modules)) {
+                    foreach ($tempuppmconf->modules as $name=>$version) {
+                        $resource = new Install($name, $version);
+                        $resource->download();
+                    }
+                }
 
-                echo "Done";
+                if ($output) Tools::statusIndicator(60, 100);
+
+                $lockFile = Configs::getLockFile();
+                if (is_array($lockFile->packages) || $lockFile->packages == null) {
+                    $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
+                }
+                $lockFile->packages->{$this->version} = $this->name;
+                if (isset($tempuppmconf)) {
+
+                    if (isset($tempuppmconf->directnamespaces)) {
+                        if (is_array($tempuppmconf->directnamespaces)) {
+                            $tempuppmconf->directnamespaces = ["TEMPNULL-------"=>"TEMPNULL-------"];
+                        }
+
+                        foreach ($tempuppmconf->directnamespaces as $key => $val)
+                            $lockFile->directnamespaces->{$key} = $val;
+                    }
+                    if (isset($tempuppmconf->cli_scripts)) {
+                        if (is_array($tempuppmconf->cli_scripts)) {
+                            $tempuppmconf->cli_scripts = ["TEMPNULL-------"=>"TEMPNULL-------"];
+                        }
+
+                        foreach ($tempuppmconf->cli_scripts as $key => $val)
+                            $lockFile->cli_scripts->{$key} = $val;
+                    }
+                }
+
+                rmdir("UPPMtempdir");
+                unlink("UPPMtemp_module.zip");
+
+                if ($output) Tools::statusIndicator(80, 100);
+                file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+                if ($output) Tools::statusIndicator(100, 100);
+                echo "Done\n";
+            }
+        }
+    }
+
+    public static function installNew($name) {
+        if (strpos($name, ":") !== false) {
+            $type = Tools::getStringBetween($name, "", ":");
+            $name = Tools::getStringBetween($name, ":", "");
+            $config = Configs::getNPPMFile();
+            if ($type=="github") {
+                if (is_array($config->modules))
+                    $config->modules = [$name=>":github"];
+                else
+                    $config->modules->{$name} = ":github";
+                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                (new Install($name, ":github"))->download();
+            } elseif ($type=="web") {
+                if (is_array($config->modules))
+                    $config->modules = [$name=>":web"];
+                else
+                    $config->modules->{$name} = ":web";
+                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                (new Install($name, ":web"))->download();
             }
         }
     }

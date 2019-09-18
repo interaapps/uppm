@@ -1,0 +1,9 @@
+{
+    "name": "phpmailer",
+    "version": "1.0",
+    "description": "Mailer",
+    "author": "PHPMailer",
+    "keywords": [],
+    "modules": {},
+    "namespaces": {}
+}
