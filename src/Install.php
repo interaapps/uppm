@@ -200,7 +200,6 @@
                 return "\n";
             }
     
-            var_dump($list);
             if (isset($list->{$name}->{$version})) {
                 $config = Configs::getNPPMFile();
                 if (is_array($config->modules))
