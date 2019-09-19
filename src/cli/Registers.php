@@ -10,6 +10,10 @@ $CLI->register("init", function() {
     return Init::initFromCLI();
 }, "Initializing Project");
 
+$CLI->register("init:fast", function() {
+    return Init::initProject("uppm project", "1.0", "", "Me", []);
+}, "Initializing Project without any information");
+
 $CLI->register("install", function() {
     global $argv;
     return Install::installNew($argv[2]);

@@ -187,6 +187,32 @@
                 file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":web"))->download();
             }
+        } else {
+            $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
+            
+            if (strpos($name, "@") !== false) {
+                $version = Tools::getStringBetween($name, "@", "");
+                $name = Tools::getStringBetween($name, "", "@");
+            } elseif (isset($list->{$name}->newest)) {
+                $version = $list->{$name}->newest;
+            } else {
+                echo "Version not found!";
+                return "\n";
+            }
+    
+            var_dump($list);
+            if (isset($list->{$name}->{$version})) {
+                $config = Configs::getNPPMFile();
+                if (is_array($config->modules))
+                    $config->modules = [$name=>$version];
+                else
+                    $config->modules->{$name} = $version;
+                
+                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                (new Install($name, $version))->download();
+            } else {
+                echo "Package not found";
+            }
         }
     }
 
