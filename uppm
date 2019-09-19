@@ -420,6 +420,7 @@ define("UPPMINFO", [
             }
         } else {
             $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
+            
             if (strpos($name, "@") !== false) {
                 $version = Tools::getStringBetween($name, "@", "");
                 $name = Tools::getStringBetween($name, "", "@");
