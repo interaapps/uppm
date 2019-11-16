@@ -298,6 +298,7 @@ define("UPPMINFO", [
     }
 
     public function download($output=true) {
+        global $uppmconf;
         if ($output) Tools::statusIndicator(5, 100);
         file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
         if (class_exists('ZipArchive')) {
@@ -390,10 +391,46 @@ define("UPPMINFO", [
                 }
 
                 if (isset($tempuppmconf->modules)) {
+                    $config = Configs::getNPPMFile();
                     foreach ($tempuppmconf->modules as $name=>$version) {
-                        $resource = new Install($name, $version);
-                        $resource->download();
+                        if (!isset($uppmconf->{$name})) {
+                            Colors::info("Installing dependency $name $version");
+                            (new Install($name, $version))->download();
+                            Colors::done("Installed dependency $name");
+
+                            Colors::info("Adding to uppm.json (modules)");
+                            $config->modules->{$name} = $version;
+                        } else if ($uppmconf->{$name} != $version) {
+                            Colors::info("The dependency $name is already installed with the version ".$uppmconf->{$name}." but the dependency $tempuppmconf->name needs the version $version. Do you want to change the dependencies version? yes/NO");
+                            if (readline("") == "yes" || readline("") == "y") {
+                                (new Install($name, $version))->download();
+                                Colors::done("Installed dependency $name");
+                                Colors::info("Adding to uppm.json (modules)");
+                                $config->modules->{$name} = $version;
+                            }
+                        } else
+                            Colors::info("Dependency $name $version is installed");
                     }
+                    file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                }
+
+                if (isset($composerconf->required)) {
+                    $config = Configs::getNPPMFile();
+                    foreach ($composerconf->required as $name=>$version) {
+                        if (!isset($uppmconf->{$name})) {
+                            Colors::info("Installing dependency $name $version");
+                            (new Install($name, ":github"))->download();
+                            Colors::done("Installed dependency $name");
+
+                            if (strpos($version, "|") !== false)
+                                $version = Tools::getStringBetween($version, "", "|");
+
+                            Colors::info("Adding to uppm.json (modules)");
+                            $config->modules->{$name."@".str_replace("^","",$version)} = ":github";
+                        } else
+                            Colors::info("Dependency $name $version is installed");
+                    }
+                    file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 }
 
                 if ($output) Tools::statusIndicator(60, 100);
