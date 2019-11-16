@@ -194,11 +194,15 @@
 
                                 Colors::info("Installing dependency ".$name."@".str_replace("^", "v", $version));
 
-                                try {
+                                $package = json_decode(file_get_contents("https://repo.packagist.org/p/".$name.".json", false, $this->webContext));
+
+                                if ( isset($package->{str_replace("^", "v", $version)}) )
                                     (new Install($name . "@" . str_replace("^", "v", $version), ":composer"))->download();
-                                } catch (Exception $e) {
+                                else if ( isset($package->{str_replace("^", "v", $version).".0"}) )
                                     (new Install($name . "@" . str_replace("^", "v", $version).".0", ":composer"))->download();
-                                }
+                                else
+                                    Colors::error("Couln't find the dependency $name with the version $version");
+
                                 Colors::done("Installed dependency $name");
 
                                 if (strpos($version, "|") !== false)
