@@ -196,11 +196,11 @@
 
                                 $package = json_decode(file_get_contents("https://repo.packagist.org/p/".$name.".json", false, $this->webContext));
 
-                                if ( isset($package->{str_replace("^", "", $version).""}->dist->url) )
-                                    (new Install($name . "@" . str_replace("^", "", $version)."", ":composer"))->download();
-                                else if ( isset($package->{str_replace("^", "v", $version)}->dist->url) )
+                                if ( isset($package->{str_replace("^", "v", $version)}->dist->url) )
                                     (new Install($name . "@" . str_replace("^", "v", $version), ":composer"))->download();
-                                else if ( isset($package->{str_replace("^", "v", $version).".0"}->dist->url) )
+                                elseif ( isset($package->{str_replace("^", "", $version).""}->dist->url) )
+                                    (new Install($name . "@" . str_replace("^", "", $version)."", ":composer"))->download();
+                                elseif ( isset($package->{str_replace("^", "v", $version).".0"}->dist->url) )
                                     (new Install($name . "@" . str_replace("^", "v", $version).".0", ":composer"))->download();
                                 else
                                     Colors::error("Couln't find the dependency $name with the version $version");
