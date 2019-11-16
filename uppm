@@ -422,8 +422,8 @@ define("UPPMINFO", [
                         if (!isset($uppmconf->{$name})) {
                             Colors::info("Checking $name");
                             if (strpos($name, "/") !== false) {
-                                Colors::info("Installing dependency $name $version");
-                                (new Install($name . "@" . str_replace("^", "v", $version), ":composer"))->download();
+                                Colors::info("Installing dependency ".$name."@".str_replace("^", "v", $version));
+                                (new Install($name."@".str_replace("^", "v", $version), ":composer"))->download();
                                 Colors::done("Installed dependency $name");
 
                                 if (strpos($version, "|") !== false)
