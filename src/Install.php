@@ -109,7 +109,6 @@
                                 if (file_exists("UPPMtempdir/".$file."/composer.json")) {
                                     $composerconf = json_decode(file_get_contents("UPPMtempdir/" . $file . "/composer.json"));
                                 }
-
                             }
                         }
                     }
@@ -140,8 +139,8 @@
                 $copy = false;
 
                 if ($output && (isset($tempuppmconf->directory) ? $tempuppmconf->directory : "") == "./") {
-                    echo "\nThis module will be moved to this directory: ".getcwd()." Do you want that? [yes,NO]";
-                    if (strtolower(readline()) != "yes")
+                    echo "\nThis module will be moved to this directory: ".getcwd()." Do you want that? [yes,NO] ";
+                    if (strtolower(readline()) != "yes" && strtolower(readline()) != "y")
                         die("Cancelled");
                     $copy = true;
                     $enddir = getcwd()."/";
@@ -172,7 +171,7 @@
                 if (is_array($lockFile->packages) || $lockFile->packages == null) {
                     $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
                 }
-                $lockFile->packages->{$this->version} = $this->name;
+                $lockFile->packages->{$this->name} = $this->version;
                 if (isset($tempuppmconf)) {
 
                     if (isset($tempuppmconf->directnamespaces)) {
@@ -198,22 +197,15 @@
 
                 if ($output) Tools::statusIndicator(80, 100);
 
-                if ($this->enddir !== false) {
-                    if ($this->enddir == "::PACKAGIST") {
-                        if ($composerconf !== false) {
-                            if (isset($composerconf->autoload->{"psr-4"})){
-                                foreach ($composerconf->autoload->{"psr-4"} as $namespace=>$paths) {
-                                    foreach ( scandir($enddir."/".$paths) as $file ) {
-                                        if ($file != "." && $file != ".."){
-                                            $lockFile->directnamespaces->{$namespace.str_replace(".php","",$file)} = $enddir."/".$paths."/".$file;
-                                        }
-                                    }
-                                }
+                if ($this->enddir !== false && $this->enddir == "::PACKAGIST" && $composerconf !== false && isset($composerconf->autoload->{"psr-4"})) {
+                    foreach ($composerconf->autoload->{"psr-4"} as $namespace=>$paths) {
+                        foreach ( scandir($enddir."/".$paths) as $file ) {
+                            if ($file != "." && $file != ".."){
+                                $lockFile->directnamespaces->{$namespace.str_replace(".php","",$file)} = $enddir."/".$paths."/".$file;
                             }
                         }
                     }
                 }
-
 
                 file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
                 if ($output) Tools::statusIndicator(100, 100);
@@ -251,8 +243,15 @@
                 (new Install($name, ":composer"))->download();
             }
         } else {
+            global $uppmconf;
+
             $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
-            
+
+            if (isset($uppmconf) && isset($uppmconf->repositories)) {
+                foreach ($uppmconf->repositories as $repository => $link)
+                    $list = array_merge($list, @json_decode(@file_get_contents($link,false, stream_context_create([ "http" => [ "method" => "GET", "header" => "User-Agent: request" ] ])), true));
+            }
+
             if (strpos($name, "@") !== false) {
                 $version = Tools::getStringBetween($name, "@", "");
                 $name = Tools::getStringBetween($name, "", "@");

@@ -40,23 +40,64 @@ $CLI->register("init:fast", function() {
 }, "Initializing Project without any information");
 
 $CLI->register("install", function() {
-    global $argv;
-    return Install::installNew($argv[2]);
-}, "Install a new package
+    global $argv, $uppmconf;
+    if (count($argv) == 2) {
+        Colors::info("Reinstalling packages...");
+        $lockFile = Configs::getLockFile();
+        $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
+        file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+        foreach ($uppmconf->modules as $name=>$version) {
+            $resource = new Install($name, $version);
+            $resource->download();
+        }
+    } elseif(count($argv) == 3) {
+        return Install::installNew($argv[2]);
+    } else
+        Colors::error("Argument error! uppm install or uppm install <package>");
+}, "uppm install <package> Install a new package
     Types:
       - 'github:' Downloads a project from github (Example: 'user/project' or 'user/project:master')
       - 'web:' Downloads a project from web (Example: https://mywebsite.com/test.zip)
-      - 'local:' Unzips a local file 'file.zip'");
+      - 'local:' Unzips a local file 'file.zip'
+     uppm install
+        Installs every package");
 
 $CLI->register("update", function() {
     global $uppmconf;
-    $lockFile = Configs::getLockFile();
-    $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
-    file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
-    foreach ($uppmconf->modules as $name=>$version) {
-        $resource = new Install($name, $version);
-        $resource->download();
+    Colors::info("Fetching main repository");
+    $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
+    if (isset($uppmconf) && isset($uppmconf->repositories)) {
+        foreach ($uppmconf->repositories as $repository => $link) {
+            Colors::info("Fetching $repository repository from $link");
+            $list = array_merge($list, @json_decode(@file_get_contents($link, false, stream_context_create(["http" => ["method" => "GET", "header" => "User-Agent: request"]])), true));
+        }
     }
+
+    Colors::info("Updating packages...");
+    $updated = 0;
+    foreach ($uppmconf->modules as $name=>$version) {
+        if ($version == ":github"){
+            Colors::info("Fetching from Github isn't available currently...");
+        } elseif($version == ":web") {
+            Colors::info("Fetching from web isn't available currently...");
+        } elseif($version == ":composer" || $version == ":packagist") {
+            Colors::info("Fetching from packagist isn't available currently...");
+        } else {
+            Colors::info("Checking $name...");
+
+            if (isset($list->{$name}->newest) && $list->{$name}->newest != $version) {
+                Colors::info("Updating ".$name." from version ".Colors::RED.$version.Colors::ENDC." to ".Colors::GREEN.$list->{$name}->newest.Colors::ENDC."");
+                try {
+                    Install::installNew($name);
+                } catch (Exception $exception) {
+                    Colors::error("Error while updating $name");
+                }
+                $updated++;
+            } else
+                Colors::info($name." is up to date");
+        }
+    }
+    Colors::done("Updated $updated packages!");
 }, "Updating all");
 
 $CLI->register("linuxglobal", function() {

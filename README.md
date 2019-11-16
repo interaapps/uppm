@@ -19,7 +19,7 @@ Or
 ```bash
 php uppm init
 ```
-`ÌNFO: IF YOU HAVE INSTALLED UPPM GLOBALLY YOU WONT NEED php before uppm. Example: uppm init`
+`INFO` IF YOU HAVE INSTALLED UPPM GLOBALLY YOU WONT NEED php before uppm. Example: uppm init`
 ### Package managment
 #### Official package
 ```bash
@@ -99,3 +99,5 @@ It's just a file on a webserver! A json file!
     }
 }
 ```
+
+`Tip: ` If you want to have a private repo you can simply check the http request with a `GET` parameter: https://example.com/list.json?private_key=KEY

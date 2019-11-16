@@ -3,6 +3,6 @@
     "cli_scripts": {},
     "directnamespaces": {},
     "packages": {
-        "1.0": "phpmailer"
+        "haveibeenpwned": "1.0"
     }
 }
