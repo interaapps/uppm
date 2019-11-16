@@ -1,7 +1,5 @@
 # UlolePHPPackageManager (UPPM) [Testversion 1]
 
-`THIS IS A TEST VERSION AND NOT FOR USING PURPOSES YET!`
-
 ### Downloading
 Execute this command in your project directory
 ```bash
@@ -14,6 +12,8 @@ sudo wget https://raw.githubusercontent.com/interaapps/uppm/master/uppm
 sudo mv uppm /usr/local/bin/uppm
 sudo chmod 777 /usr/local/bin/uppm
 ```
+Or
+`php uppm linuxglobal` (Also useful for updating)
 
 ### Init
 ```bash
@@ -33,6 +33,10 @@ php uppm install github:user/mypackage
 ```bash
 php uppm install github:user/mypackage+master
 ``` 
+#### Composer (Packagist)
+```bash
+php uppm install composer:user/package@v1.0
+```
 #### Web
 ```bash
 php uppm install web:https://user.com/mypackage.zip
