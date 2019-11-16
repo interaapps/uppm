@@ -184,9 +184,11 @@
                 }
 
                 if (isset($composerconf->require)) {
+                    Colors::info("Checking composer dependencies");
                     $config = Configs::getNPPMFile();
                     foreach ($composerconf->require as $name=>$version) {
                         if (!isset($uppmconf->{$name})) {
+                            Colors::info("Checking $name");
                             if (strpos($name, "/") !== false) {
                                 Colors::info("Installing dependency $name $version");
                                 (new Install($name, ":github"))->download();
