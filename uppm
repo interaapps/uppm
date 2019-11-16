@@ -697,6 +697,15 @@ $CLI->register("update", function() {
     }
 }, "Updating all");
 
+$CLI->register("linuxglobal", function() {
+    Colors::info("This action requires root permissions (sudo)");
+    exec("
+    sudo wget --output-document=tmp__uppm https://raw.githubusercontent.com/interaapps/uppm/master/uppm
+    sudo mv tmp__uppm /usr/local/bin/uppm
+    sudo chmod 777 /usr/local/bin/uppm
+    ");
+}, "Installing globally on linux");
+
 $CLI->register("build", function() {
     global $uppmconf;
     $build = new Build();
