@@ -68,6 +68,7 @@
 
     public function download($output=true) {
         global $uppmconf;
+
         if ($output) Tools::statusIndicator(5, 100);
         file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
         if (class_exists('ZipArchive')) {
@@ -117,7 +118,7 @@
 
                 if ($output) Tools::statusIndicator(50, 100);
 
-                $enddir = "modules/err";
+
 
                 if ($this->enddir !== false) {
                     if ($this->enddir == "::PACKAGIST") {
