@@ -103,11 +103,11 @@
                 $copy = false;
 
                 if ($output && (isset($tempuppmconf->directory) ? $tempuppmconf->directory : "") == "./") {
-                    echo "\nThis module will be moved to this directory: ".dirname(__FILE__)." Do you want that? [yes,NO]";
+                    echo "\nThis module will be moved to this directory: ".getcwd()." Do you want that? [yes,NO]";
                     if (strtolower(readline()) != "yes")
-                        die("Cancelt");
+                        die("Cancelled");
                     $copy = true;
-                    $enddir = dirname(__FILE__);
+                    $enddir = getcwd()."/";
                 }
 
                 if ($dirInZip !== false) {
