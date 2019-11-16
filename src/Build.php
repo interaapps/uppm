@@ -26,6 +26,11 @@ class Build {
 
         Colors::info("Building...");
 
+        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile))
+            unlink(getcwd()."/".$this->outputLocation."/".$this->outputFile);
+        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz"))
+            unlink(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz");
+
         if (!file_exists($this->outputLocation)) {
             Colors::info("Creating dir: ".$this->outputLocation);
             mkdir($this->outputLocation);
@@ -35,12 +40,12 @@ class Build {
         $phar = new Phar(getcwd()."/".$this->outputLocation."/".$this->outputFile);
 
         Colors::info("BuildFromDirectory: ".$this->directory);
-        $phar->buildFromDirectory(getcwd()."/".$this->directory/*, '/^(?!(.*git))'.(function(){
-                $out = "";
-                foreach ($this->ignoredDirectories as $folder)
-                    $out .= "(?!(.*".$folder."))";
+        $phar->buildFromDirectory(getcwd()."/".$this->directory, '/^(?!(.*uppm_target))'.(function(){
+            $out = "";
+            foreach ($this->ignoredDirectories as $directory)
+                $out .= '(?!(.*'.$directory.'))';
             return $out;
-        })().'$/i'*/);
+        })().'(.*)$/i');
 
 
         if ($this->main !== false) {

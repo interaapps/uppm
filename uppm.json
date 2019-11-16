@@ -12,10 +12,9 @@
     },
     "initscripts": [],
     "build": {
-        "main": "uppm"
-    },
-    "serve": {
-        "directory": "tests/pharme",
-        "routerFile": "test.php"
+        "main": "uppm",
+        "ignored_directories": [
+            ".idea"
+        ]
     }
 }

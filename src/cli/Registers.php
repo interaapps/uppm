@@ -145,8 +145,8 @@ $CLI->register("build", function() {
         $build->setOutputFile($uppmconf->build->output);
     if(isset($uppmconf->build->src))
         $build->setDirectory($uppmconf->build->src);
-    if(isset($uppmconf->build->ignore_directories))
-        $build->setIgnoredDirectories($uppmconf->build->ignore_directories);
+    if(isset($uppmconf->build->ignored_directories))
+        $build->setIgnoredDirectories($uppmconf->build->ignored_directories);
     if(isset($uppmconf->build->ignored_files))
         $build->setIgnoredFiles($uppmconf->build->ignored_files);
 

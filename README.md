@@ -69,6 +69,12 @@ php uppm build
         "main": "main.php",
         "output" (optional): "test.phar",
         "src" (optional): "src",
+        "ignored_directories" (optional): [
+            ".idea"
+        ],
+        "ignored_files" (optional): [
+            "testfile.php"
+        ]
     }
 }
 ```
