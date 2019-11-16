@@ -8,8 +8,8 @@
  */
 
  class CLI {
-    public $commands;
-    public $descriptions;
+    public $commands = [];
+    public $descriptions = [];
     /**
      * Change the not found errormessage
      */
@@ -55,6 +55,14 @@
 
         }
     }
+
+     public function getCommands(): array {
+         return $this->commands;
+     }
+
+     public function getDescriptions(): array {
+         return $this->descriptions;
+     }
  }
 
  ?>

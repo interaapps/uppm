@@ -2,8 +2,33 @@
 ini_set('phar.readonly',0);
 $CLI = new CLI(1);
 
+$CLI->register("", function() {
+    global $CLI;
+
+    echo Colors::TURQUIOUS."
+            ╔╗─╔╗╔═══╗╔═══╗╔═╗╔═╗
+            ║║─║║║╔═╗║║╔═╗║║║╚╝║║
+            ║║─║║║╚═╝║║╚═╝║║╔╗╔╗║
+            ║║─║║║╔══╝║╔══╝║║║║║║
+            ║╚═╝║║║───║║───║║║║║║
+            ╚═══╝╚╝───╚╝───╚╝╚╝╚╝
+            A PHP PACKAGE MANAGER
+                    BY ".Colors::OKBLUE."INTERAAPPS
+            ".Colors::ENDC;
+
+    foreach ($CLI->getCommands() as $command=>$execution)
+        echo "\n".Colors::TURQUIOUS.$command.Colors::HEADER.": ".Colors::OKBLUE.$CLI->getDescriptions()[$command].Colors::ENDC;
+
+    return Colors::TURQUIOUS."UPPM Version: ".Colors::OKBLUE.UPPMINFO["version"]."\n".Colors::ENDC;
+}, "UPPM");
+
+$CLI->register("help", function() {
+    global $CLI;
+    return $CLI->getCommands()[""]();
+});
+
 $CLI->register("-v", function() {
-    return UPPMINFO["version"]."\n";
+    return Colors::TURQUIOUS."UPPM Version: ".Colors::OKBLUE.UPPMINFO["version"]."\n".Colors::ENDC;
 }, "See UPPMs version");
 
 $CLI->register("init", function() {
@@ -41,7 +66,7 @@ $CLI->register("linuxglobal", function() {
     sudo mv tmp__uppm /usr/local/bin/uppm
     sudo chmod 777 /usr/local/bin/uppm
     ");
-}, "Installing globally on linux");
+}, "Installing globally on linux ".Colors::RED."* ".Colors::YELLOW."Root required!");
 
 $CLI->register("build", function() {
     global $uppmconf;
@@ -67,7 +92,7 @@ $CLI->register("build", function() {
 if (isset($argv[1]))
     $CLI->run($argv[1], $argv);
 else
-    echo COLORS::PREFIX_ERROR."Command not found\n";
+    $CLI->run("", $argv);
 $lockFile = Configs::getLockFile();
 if (isset($lockFile->packages->{"TEMPNULL-------"})) {
     unset($lockFile->packages->{"TEMPNULL-------"});
