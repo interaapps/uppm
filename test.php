@@ -1,6 +1,6 @@
 <?php
 require "autoload.php";
 
-\mymodule\MyFile::sayHello();
+echo "HI";
 
 ?>

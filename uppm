@@ -431,7 +431,6 @@ define("UPPMINFO", [
                 return "\n";
             }
     
-            var_dump($list);
             if (isset($list->{$name}->{$version})) {
                 $config = Configs::getNPPMFile();
                 if (is_array($config->modules))
@@ -450,6 +449,104 @@ define("UPPMINFO", [
  }
 
  ?>
+<?php
+/**
+ * - ULOLEPHPPACKAGEMANAGER -
+ * 
+ * INIT
+ * 
+ * @author InteraApps
+ */
+
+class Build {
+
+    private $directory;
+    private $outputLocation = "uppm_target";
+    private $main = false;
+    private $outputFile = "test.phar";
+    private $ignoredDirectories = [];
+    private $ignoredFiles = [];
+
+    public function __construct(){
+
+    }
+
+    public function build() : void {
+
+        Colors::info("UPPM Build - Building into a phar");
+
+        Colors::info("Building...");
+
+        if (!file_exists($this->outputLocation)) {
+            Colors::info("Creating dir: ".$this->outputLocation);
+            mkdir($this->outputLocation);
+        }
+
+        Colors::info("Initializing PHP-Phar");
+        $phar = new Phar(getcwd()."/".$this->outputLocation."/".$this->outputFile);
+
+        Colors::info("BuildFromDirectory: ".$this->directory);
+        $phar->buildFromDirectory(getcwd()."/".$this->directory/*, '/^(?!(.*git))'.(function(){
+                $out = "";
+                foreach ($this->ignoredDirectories as $folder)
+                    $out .= "(?!(.*".$folder."))";
+            return $out;
+        })().'$/i'*/);
+
+
+        if ($this->main !== false) {
+            Colors::info("Setting stub to".$this->main);
+            $phar->setDefaultStub($this->main, "/" . $this->main);
+        } else
+            Colors::warning("main haven't been found in uppm.json (\"build\": {\"main\": NULL (NOT FOUND)})");
+
+
+        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz")) {
+            Colors::info("Removing old ".$this->outputFile.".gz");
+            unlink(getcwd() . "/" . $this->outputLocation . "/" . $this->outputFile . ".gz");
+        }
+
+        Colors::info("Compressing...");
+        $phar->compress(Phar::GZ);
+        Colors::done("Built into the file ".getcwd()."/".$this->outputLocation."/".$this->outputFile);
+
+        foreach ($this->ignoredFiles as $file) {
+            try {
+                Colors::info("Removing file in Phar: ".$file);
+                $phar->delete($file);
+            } catch (BadMethodCallException $e) {}
+        }
+        Colors::done("Done!");
+
+    }
+
+    public function setDirectory(string $directory) : void{
+        $this->directory = $directory;
+    }
+
+    public function setOutputFile(string $file) : void{
+        $this->outputFile = $file;
+    }
+
+    public function setMain(string $main) : void{
+        $this->main = $main;
+    }
+
+    public function setIgnoredFiles(array $ignoredFiles) : void {
+        $this->ignoredFiles = $ignoredFiles;
+    }
+
+    public function setIgnoredDirectories(array $ignoredDirectories): void{
+        $this->ignoredDirectories = $ignoredDirectories;
+    }
+
+    public function setOutputLocation(string $outputLocation): void{
+        $this->outputLocation = $outputLocation;
+    }
+
+}
+
+?>
 <?php
 /**
  * - ULOLEPHPPACKAGEMANAGER -
@@ -483,7 +580,24 @@ define("UPPMINFO", [
         
     public const PREFIX_DONE = "\033[92m᮰ Done\033[0m: ",
                  PREFIX_WARN = "\033[93m᮰ WARNING\033[0m: ",
+                 PREFIX_INFO = "\033[36m᮰ INFO\033[0m: ",
                  PREFIX_ERROR = "\033[91m᮰ ERROR\033[0m: ";
+
+    public static function info($str){
+        echo self::PREFIX_INFO.$str.self::ENDC."\n";
+    }
+
+     public static function warning($str){
+         echo self::PREFIX_WARN.$str.self::ENDC."\n";
+     }
+
+     public static function done($str){
+         echo self::PREFIX_DONE.$str.self::ENDC."\n";
+     }
+
+     public static function error($str){
+         echo self::PREFIX_ERROR.$str.self::ENDC."\n";
+     }
  }
 
  ?>
@@ -547,8 +661,8 @@ define("UPPMINFO", [
  }
 
  ?>
-<?php 
-
+<?php
+ini_set('phar.readonly',0);
 $CLI = new CLI(1);
 
 $CLI->register("-v", function() {
@@ -582,6 +696,26 @@ $CLI->register("update", function() {
         $resource->download();
     }
 }, "Updating all");
+
+$CLI->register("build", function() {
+    global $uppmconf;
+    $build = new Build();
+    $build->setDirectory(".");
+    $build->setOutputFile((isset($uppmconf->name)?$uppmconf->name:"project")."-".(isset($uppmconf->version)?$uppmconf->version:"1.0").".phar");
+
+    if(isset($uppmconf->build->main))
+        $build->setMain($uppmconf->build->main);
+    if(isset($uppmconf->build->output))
+        $build->setOutputFile($uppmconf->build->output);
+    if(isset($uppmconf->build->src))
+        $build->setDirectory($uppmconf->build->src);
+    if(isset($uppmconf->build->ignore_directories))
+        $build->setIgnoredDirectories($uppmconf->build->ignore_directories);
+    if(isset($uppmconf->build->ignored_files))
+        $build->setIgnoredFiles($uppmconf->build->ignored_files);
+
+    $build->build();
+}, "Build to a .phar file");
 
 
 if (isset($argv[1]))

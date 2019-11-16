@@ -9,6 +9,7 @@ $files = [
     "Init.php",
     "Configs.php",
     "Install.php",
+    "Build.php",
 
     "cli/Colors.php",
     "cli/CLI.php",

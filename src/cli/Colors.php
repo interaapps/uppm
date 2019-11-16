@@ -31,7 +31,24 @@
         
     public const PREFIX_DONE = "\033[92m᮰ Done\033[0m: ",
                  PREFIX_WARN = "\033[93m᮰ WARNING\033[0m: ",
+                 PREFIX_INFO = "\033[36m᮰ INFO\033[0m: ",
                  PREFIX_ERROR = "\033[91m᮰ ERROR\033[0m: ";
+
+    public static function info($str){
+        echo self::PREFIX_INFO.$str.self::ENDC."\n";
+    }
+
+     public static function warning($str){
+         echo self::PREFIX_WARN.$str.self::ENDC."\n";
+     }
+
+     public static function done($str){
+         echo self::PREFIX_DONE.$str.self::ENDC."\n";
+     }
+
+     public static function error($str){
+         echo self::PREFIX_ERROR.$str.self::ENDC."\n";
+     }
  }
 
  ?>

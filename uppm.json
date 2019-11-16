@@ -7,5 +7,9 @@
         ""
     ],
     "modules": {},
-    "initscripts": []
+    "initscripts": [],
+
+    "build": {
+        "main": "uppm"
+    }
 }
