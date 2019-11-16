@@ -1,7 +1,8 @@
 {
     "init_scripts": [],
     "cli_scripts": {},
-    "directnamespaces": {},
+    "directnamespaces": {
+    },
     "packages": {
     }
 }

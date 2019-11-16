@@ -11,7 +11,7 @@
 
     private $downloadUrl,
             $type,
-            $enddir,
+            $enddir = false,
             $webContext,
             $name,
             $version;
@@ -37,6 +37,19 @@
         } elseif($version == ":web") {
             $this->type = "web";
             $this->downloadUrl = $name;
+        } elseif ($version == ":composer" || $version == ":packagist") {
+            $this->webContext = stream_context_create([
+                "http" => [
+                    "method" => "GET",
+                    "header" => "User-Agent: request"
+                ]
+            ]);
+
+            $this->enddir = "::PACKAGIST";
+
+            $this->type = "web";
+            $package = json_decode(file_get_contents("https://repo.packagist.org/p/".Tools::getStringBetween($name, "", "@").".json", false, $this->webContext));
+            $this->downloadUrl = $package->packages->{Tools::getStringBetween($name, "", "@")}->{Tools::getStringBetween($name, "@", "")}->dist->url;
         } elseif(UPPMINFO["server"] !== false) {
             $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
             if ($list->{$this->name}->{$this->version} != null) {
@@ -73,8 +86,12 @@
                     return $counter;
                 })($files);
 
+                $composerconf = false;
+
                 if (file_exists("UPPMtempdir/uppm.json"))
                     $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/uppm.json"));
+                else if (file_exists("UPPMtempdir/composer.json"))
+                    $composerconf = json_decode(file_get_contents("UPPMtempdir/composer.json"));
 
                 if ($count == 1) {
                     foreach($files as $file) {
@@ -83,12 +100,26 @@
                                 $dirInZip = $file;
                                 if (file_exists("UPPMtempdir/".$file."/uppm.json"))
                                     $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/".$file."/uppm.json"));
+                                if (file_exists("UPPMtempdir/".$file."/composer.json")) {
+                                    $composerconf = json_decode(file_get_contents("UPPMtempdir/" . $file . "/composer.json"));
+                                }
+
                             }
                         }
                     }
                 }
 
                 if ($output) Tools::statusIndicator(50, 100);
+
+                $enddir = "modules/err";
+
+                if ($this->enddir !== false) {
+                    if ($this->enddir == "::PACKAGIST") {
+                        if ($composerconf !== false) {
+                            $enddir = "modules/".Tools::getStringBetween($composerconf->name, "/", "");
+                        }
+                    }
+                }
 
                 if (isset($tempuppmconf->directory))
                     $enddir = $tempuppmconf->directory;
@@ -160,8 +191,27 @@
                 unlink("UPPMtemp_module.zip");
 
                 if ($output) Tools::statusIndicator(80, 100);
+
+                if ($this->enddir !== false) {
+                    if ($this->enddir == "::PACKAGIST") {
+                        if ($composerconf !== false) {
+                            if (isset($composerconf->autoload->{"psr-4"})){
+                                foreach ($composerconf->autoload->{"psr-4"} as $namespace=>$paths) {
+                                    foreach ( scandir($enddir."/".$paths) as $file ) {
+                                        if ($file != "." && $file != ".."){
+                                            $lockFile->directnamespaces->{$namespace.str_replace(".php","",$file)} = $enddir."/".$paths."/".$file;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
                 file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
                 if ($output) Tools::statusIndicator(100, 100);
+
                 echo "Done\n";
             }
         }
@@ -186,6 +236,13 @@
                     $config->modules->{$name} = ":web";
                 file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":web"))->download();
+            } elseif ($type=="composer" || $type=="packagist") {
+                if (is_array($config->modules))
+                    $config->modules = [$name=>":composer"];
+                else
+                    $config->modules->{$name} = ":composer";
+                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                (new Install($name, ":composer"))->download();
             }
         } else {
             $list = @json_decode(@file_get_contents((UPPMINFO["server"])));

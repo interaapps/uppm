@@ -6,9 +6,9 @@
     "keywords": [
         ""
     ],
-    "modules": {},
+    "modules": {
+    },
     "initscripts": [],
-
     "build": {
         "main": "uppm"
     }
