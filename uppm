@@ -896,6 +896,30 @@ $CLI->register("linuxglobal", function() {
     ");
 }, "Installing globally on linux ".Colors::RED."* ".Colors::YELLOW."Root required!");
 
+$CLI->register("serve", function(){
+    global $uppmconf;
+
+    $host = "0.0.0.0";
+    $port = "8000";
+    $directory = ".";
+    $routerFile = "";
+
+    if(isset($uppmconf->serve->port)) $port = $uppmconf->serve->port;
+    if(isset($uppmconf->serve->host)) $host = $uppmconf->serve->host;
+    if(isset($uppmconf->serve->directory)) $directory = $uppmconf->serve->directory;
+    if(isset($uppmconf->serve->routerFile)) $routerFile = $uppmconf->serve->routerFile;
+
+    Colors::done("Binding on $port");
+    $exec= "cd $directory
+    php -S $host:$port -t ./ $routerFile";
+    system($exec);
+    exec($exec);
+    shell_exec($exec);
+
+    Colors::error("Couldn't start the webserver!");
+
+}, "testserver");
+
 $CLI->register("build", function() {
     global $uppmconf;
     $build = new Build();

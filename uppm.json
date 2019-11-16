@@ -13,5 +13,9 @@
     "initscripts": [],
     "build": {
         "main": "uppm"
+    },
+    "serve": {
+        "directory": "tests/pharme",
+        "routerFile": "test.php"
     }
 }

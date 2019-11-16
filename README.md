@@ -101,3 +101,24 @@ It's just a file on a webserver! A json file!
 ```
 
 `Tip: ` If you want to have a private repo you can simply check the http request with a `GET` parameter: https://example.com/list.json?private_key=KEY
+
+### Test Server
+#### Starting
+```bash
+php uppm serve
+```
+
+#### Configurating
+`INFO` Every option is optionial!
+```json
+{
+    "name": "uppm",
+    ...
+    "serve": {
+        "directory": "public", // default . (Project directory)
+        "routerFile": "index.php", // default: none.
+        "host": "0.0.0.0", // default: 0.0.0.0 (localhost,127.0.0.1)
+        "port": 8000 // Default: 8000
+    }
+}
+```
