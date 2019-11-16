@@ -192,14 +192,14 @@
                             Colors::info("Checking $name");
                             if (strpos($name, "/") !== false) {
                                 Colors::info("Installing dependency $name $version");
-                                (new Install($name, ":github"))->download();
+                                (new Install($name, ":composer"))->download();
                                 Colors::done("Installed dependency $name");
 
                                 if (strpos($version, "|") !== false)
                                     $version = Tools::getStringBetween($version, "", "|");
 
                                 Colors::info("Adding to uppm.json (modules)");
-                                $config->modules->{$name . "@" . str_replace("^", "", $version)} = ":github";
+                                $config->modules->{$name . "@" . str_replace("^", "", $version)} = ":composer";
                             }
                         } else
                             Colors::info("Dependency $name $version is installed");
