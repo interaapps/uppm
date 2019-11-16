@@ -183,19 +183,21 @@
                     file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 }
 
-                if (isset($composerconf->required)) {
+                if (isset($composerconf->require)) {
                     $config = Configs::getNPPMFile();
-                    foreach ($composerconf->required as $name=>$version) {
+                    foreach ($composerconf->require as $name=>$version) {
                         if (!isset($uppmconf->{$name})) {
-                            Colors::info("Installing dependency $name $version");
-                            (new Install($name, ":github"))->download();
-                            Colors::done("Installed dependency $name");
+                            if (strpos($name, "/") !== false) {
+                                Colors::info("Installing dependency $name $version");
+                                (new Install($name, ":github"))->download();
+                                Colors::done("Installed dependency $name");
 
-                            if (strpos($version, "|") !== false)
-                                $version = Tools::getStringBetween($version, "", "|");
+                                if (strpos($version, "|") !== false)
+                                    $version = Tools::getStringBetween($version, "", "|");
 
-                            Colors::info("Adding to uppm.json (modules)");
-                            $config->modules->{$name."@".str_replace("^","",$version)} = ":github";
+                                Colors::info("Adding to uppm.json (modules)");
+                                $config->modules->{$name . "@" . str_replace("^", "", $version)} = ":github";
+                            }
                         } else
                             Colors::info("Dependency $name $version is installed");
                     }
