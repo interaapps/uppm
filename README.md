@@ -46,6 +46,18 @@ php uppm install web:https://user.com/mypackage.zip
 ```bash
 php uppm build
 ``` 
+
+#### Repositories
+```json
+{
+    "name": "uppm",
+    ...
+    "repositories": {
+        "myrepos": "https://my.repos/repository.json"
+    }
+}
+```
+
 ##### Config (uppm.json)
 ```json
 {
@@ -57,6 +69,33 @@ php uppm build
         "main": "main.php",
         "output" (optional): "test.phar",
         "src" (optional): "src",
+    }
+}
+```
+
+### Custom repositories
+It's just a file on a webserver! A json file!
+#### Example list.json
+```json
+{    
+    "julianfun123/uloleorm": {
+        "newest": "1.0",
+        "1.0": "https://example.com/repos/1.0.zip"
+    }
+}
+```
+
+#### Repository in uppm.json
+```json
+{
+    "name": "uppm",
+    ...
+    "repositories": {
+        "example": "https://example.com/list.json"
+    },
+    "modules": {
+        ...
+        "julianfun123/uloleorm": "1.0"
     }
 }
 ```

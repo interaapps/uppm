@@ -1,8 +1,8 @@
 {
     "init_scripts": [],
     "cli_scripts": {},
-    "directnamespaces": {
-    },
+    "directnamespaces": {},
     "packages": {
+        "1.0": "phpmailer"
     }
 }

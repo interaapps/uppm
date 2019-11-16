@@ -282,12 +282,18 @@ define("UPPMINFO", [
             $package = json_decode(file_get_contents("https://repo.packagist.org/p/".Tools::getStringBetween($name, "", "@").".json", false, $this->webContext));
             $this->downloadUrl = $package->packages->{Tools::getStringBetween($name, "", "@")}->{Tools::getStringBetween($name, "@", "")}->dist->url;
         } elseif(UPPMINFO["server"] !== false) {
-            $list = @json_decode(@file_get_contents((UPPMINFO["server"])));
+            $list = @json_decode(@file_get_contents((UPPMINFO["server"])), true);
+            global $uppmconf;
+            if (isset($uppmconf) && isset($uppmconf->repositories)) {
+                foreach ($uppmconf->repositories as $repository => $link) {
+                    $list = array_merge($list, @json_decode(@file_get_contents($link,false, stream_context_create([ "http" => [ "method" => "GET", "header" => "User-Agent: request" ] ])), true));
+                }
+            }
+            $list = json_decode(json_encode($list));
             if ($list->{$this->name}->{$this->version} != null) {
                 $this->downloadUrl = $list->{$this->name}->{$this->version};
             }
             $this->type = "normal";
-
         }
     }
 

@@ -6,7 +6,9 @@
     "keywords": [
         ""
     ],
+    "repositories": { },
     "modules": {
+        "phpmailer": "1.0"
     },
     "initscripts": [],
     "build": {
