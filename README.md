@@ -110,15 +110,24 @@ php uppm serve
 
 #### Configurating
 `INFO` Every option is optionial!
+
+
+| Option          | Default               |
+| --------------- |---------------------- |
+| directory       | ./ (project directory) |
+| routerfile      | none                  |
+| host            | 0.0.0.0 (localhost)   |
+| port            | 8000                  |
+
 ```json
 {
     "name": "uppm",
     ...
     "serve": {
-        "directory": "public", // default . (Project directory)
-        "routerFile": "index.php", // default: none.
-        "host": "0.0.0.0", // default: 0.0.0.0 (localhost,127.0.0.1)
-        "port": 8000 // Default: 8000
+        "directory": "public", 
+        "routerFile": "index.php",
+        "host": "0.0.0.0",
+        "port": 8000 
     }
 }
 ```
