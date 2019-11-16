@@ -299,7 +299,7 @@ define("UPPMINFO", [
 
     public function download($output=true) {
         global $uppmconf;
-
+        $enddir = "cbf_".rand(0000,9999); // cbf = Cant be fetched
         if ($output) Tools::statusIndicator(5, 100);
         file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
         if (class_exists('ZipArchive')) {
@@ -423,14 +423,14 @@ define("UPPMINFO", [
                             Colors::info("Checking $name");
                             if (strpos($name, "/") !== false) {
                                 Colors::info("Installing dependency $name $version");
-                                (new Install($name, ":composer"))->download();
+                                (new Install($name . "@" . str_replace("^", "v", $version), ":composer"))->download();
                                 Colors::done("Installed dependency $name");
 
                                 if (strpos($version, "|") !== false)
                                     $version = Tools::getStringBetween($version, "", "|");
 
                                 Colors::info("Adding to uppm.json (modules)");
-                                $config->modules->{$name . "@" . str_replace("^", "", $version)} = ":composer";
+                                $config->modules->{$name . "@" . str_replace("^", "v", $version)} = ":composer";
                             }
                         } else
                             Colors::info("Dependency $name $version is installed");
