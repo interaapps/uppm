@@ -191,8 +191,14 @@
                         if (!isset($uppmconf->{$name})) {
                             Colors::info("Checking $name");
                             if (strpos($name, "/") !== false) {
+
                                 Colors::info("Installing dependency ".$name."@".str_replace("^", "v", $version));
-                                (new Install($name."@".str_replace("^", "v", $version), ":composer"))->download();
+
+                                try {
+                                    (new Install($name . "@" . str_replace("^", "v", $version), ":composer"))->download();
+                                } catch (Exception $e) {
+                                    (new Install($name . "@" . str_replace("^", "v", $version).".0", ":composer"))->download();
+                                }
                                 Colors::done("Installed dependency $name");
 
                                 if (strpos($version, "|") !== false)
