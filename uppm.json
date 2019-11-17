@@ -1,19 +1,44 @@
 {
     "name": "uppm",
-    "version": "1.0",
-    "description": "",
-    "author": "",
+    "version": "1.1",
+    "description": "UPPM Is a PHP Package Manager with many useful tools!",
+    "author": "InteraApps",
+    "organization": "InteraApps",
+    "authors": [
+        {
+            "name": "JulianFun123"
+        }
+    ],
     "keywords": [
-        ""
+        "The Ulole Project",
+        "Package Manager",
+        "PHP 7"
+    ],
+    "requirements": [
+        "php >7.0",
+        "ZipArchive",
+        "Phar : phar.readonly = Off (Enable in php.ini)"
     ],
     "repositories": {},
-    "modules": {
-    },
+    "modules": {},
     "initscripts": [],
     "build": {
         "main": "uppm",
         "ignored_directories": [
-            ".idea"
+            ".idea",
+            ".git",
+            "tests",
+            "modules"
+        ],
+        "ignored_files": [
+            ".gitignore"
+        ]
+    },
+    "archive": {
+        "ignore": [
+            ".gitignore",
+            ".idea",
+            ".git"
         ]
     }
 }

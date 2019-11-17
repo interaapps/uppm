@@ -1,5 +1,7 @@
 <?php
-
+/**
+ *
+ */
 $output = '';
 
 $files = [
@@ -10,6 +12,7 @@ $files = [
     "Configs.php",
     "Install.php",
     "Build.php",
+    "Archive.php",
 
     "cli/Colors.php",
     "cli/CLI.php",

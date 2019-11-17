@@ -153,6 +153,23 @@ $CLI->register("build", function() {
     $build->build();
 }, "Build to a .phar file");
 
+$CLI->register("archive", function () {
+    global $uppmconf;
+    $archive = new Archive();
+    $destination = (isset($uppmconf->name)?$uppmconf->name:"project")."-".(isset($uppmconf->version)?$uppmconf->version:"1.0").".zip";
+    $source = ".";
+    $ignore = [];
+
+    if(isset($uppmconf->archive->ignore))
+        $ignore = $uppmconf->archive->ignore;
+    if(isset($uppmconf->archive->src))
+        $source = $uppmconf->archive->src;
+    if(isset($uppmconf->archive->output))
+        $destination = $uppmconf->archives->output;
+
+    $archive->setIgnore($ignore);
+    $archive->build($source, $destination);
+}, "Archives the project!");
 
 if (isset($argv[1]))
     $CLI->run($argv[1], $argv);
