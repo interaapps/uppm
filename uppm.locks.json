@@ -3,6 +3,5 @@
     "cli_scripts": {},
     "directnamespaces": {},
     "packages": {
-        "phpmailer": "1.0"
     }
 }
