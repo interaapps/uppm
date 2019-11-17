@@ -43,7 +43,7 @@ class Build {
         $phar->buildFromDirectory(getcwd()."/".$this->directory, '/^(?!(.*uppm_target))'.(function(){
             $out = "";
             foreach ($this->ignoredDirectories as $directory)
-                $out .= '(?!(.*'.$directory.'))';
+                $out .= '(?!(.*'.str_replace("/","\\/",$directory).'))';
             return $out;
         })().'(.*)$/i');
 

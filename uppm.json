@@ -8,7 +8,7 @@
     ],
     "repositories": {},
     "modules": {
-        "haveibeenpwned": "1.0"
+        "phpmailer": "1.0"
     },
     "initscripts": [],
     "build": {

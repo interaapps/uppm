@@ -47,17 +47,6 @@ php uppm install web:https://user.com/mypackage.zip
 php uppm build
 ``` 
 
-#### Repositories
-```json
-{
-    "name": "uppm",
-    ...
-    "repositories": {
-        "myrepos": "https://my.repos/repository.json"
-    }
-}
-```
-
 ##### Config (uppm.json)
 ```json
 {
