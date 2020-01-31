@@ -12,6 +12,8 @@ class Archive {
     private $ignore = [];
 
     public function build($source, $destination) : void {
+        if (!file_exists(getcwd()."/uppm_target"))
+            mkdir(getcwd()."/uppm_target");
         if (!file_exists(getcwd()."/uppm_target/archives"))
             mkdir(getcwd()."/uppm_target/archives");
 
