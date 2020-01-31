@@ -19,10 +19,10 @@ Or
 `php uppm linuxglobal` (Also useful for updating)
 
 `IMPORTANT!` Requirements:
-    - php7.3
-    - php7.3-zip (Install: sudo apt install php7.3-zip)
-    - php7.3-json (sudo apt install php7.3-json)
-    - phar enabled in the php.ini. Example path: `/etc/php/7.3/cli/php.ini` set `;phar.readonly = On` (num: 1060) to `phar.readonly = Off`!
+- php7.3
+- php7.3-zip (Install: sudo apt install php7.3-zip)
+- php7.3-json (sudo apt install php7.3-json)
+- phar enabled in the php.ini. Example path: `/etc/php/7.3/cli/php.ini` set `;phar.readonly = On` (num: 1060) to `phar.readonly = Off`!
 
 ### Init
 ```bash
