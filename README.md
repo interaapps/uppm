@@ -1,3 +1,6 @@
+<p align="center"><img src="https://cdn.interaapps.de/ulole/icons/ulole1.svg" width="200"><br>Ulole-PHP-Package-Manager</p>
+
+
 # UlolePHPPackageManager (UPPM) [Testversion 1]
 
 ### Downloading
@@ -14,6 +17,12 @@ sudo chmod 777 /usr/local/bin/uppm
 ```
 Or
 `php uppm linuxglobal` (Also useful for updating)
+
+`IMPORTANT!` Requirements:
+    - php7.3
+    - php7.3-zip (Install: sudo apt install php7.3-zip)
+    - php7.3-json (sudo apt install php7.3-json)
+    - phar enabled in the php.ini. Example path: `/etc/php/7.3/cli/php.ini` set `;phar.readonly = On` (num: 1060) to `phar.readonly = Off`!
 
 ### Init
 ```bash

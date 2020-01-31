@@ -171,6 +171,12 @@ $CLI->register("archive", function () {
     $archive->build($source, $destination);
 }, "Archives the project!");
 
+$CLI->register("deploy", function () {
+
+}, "Deploy:
+        SOON
+");
+
 if (isset($argv[1]))
     $CLI->run($argv[1], $argv);
 else
