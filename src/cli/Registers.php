@@ -201,6 +201,25 @@ $CLI->register("deploy", function () {
         SOON
 ");
 
+$CLI->register("info", function(){
+    global $uppmconf;
+    echo Colors::GREEN."---== ".Colors::TURQUIOUS."UPPM".Colors::GREEN." ==---".Colors::ENDC."\n";
+    echo "Overview: \n";
+
+    if ($uppmconf->name != null)
+        echo Colors::OKBLUE."Name: ".Colors::YELLOW.$uppmconf->name.Colors::ENDC."\n";
+    if ($uppmconf->version!= null)
+        echo Colors::OKBLUE."Version: ".Colors::YELLOW.$uppmconf->version.Colors::ENDC."\n";
+    if ($uppmconf->author!= null)
+        echo Colors::OKBLUE."Author: ".Colors::YELLOW.$uppmconf->author.Colors::ENDC."\n";
+
+    echo "\nDependencies: \n";
+    foreach ($uppmconf->modules as $module=>$ver)
+        echo "- ".Colors::OKBLUE.$module." ".Colors::YELLOW.$ver.Colors::ENDC;
+    echo "\n";
+    echo Colors::GREEN."---== ".Colors::TURQUIOUS."-==-".Colors::GREEN." ==---".Colors::ENDC."\n";
+});
+
 if (isset($argv[1]))
     $CLI->run($argv[1], $argv);
 else
