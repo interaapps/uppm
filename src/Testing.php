@@ -1,8 +1,0 @@
-<?php
-// SOON
-class Testing {
-
-
-
-}
-?>

@@ -13,6 +13,7 @@ $files = [
     "Install.php",
     "Build.php",
     "Archive.php",
+    "Runner.php",
 
     "cli/Colors.php",
     "cli/CLI.php",

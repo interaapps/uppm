@@ -94,7 +94,6 @@
 
          }
 
-
          file_put_contents("autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
      }
 

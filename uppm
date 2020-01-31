@@ -109,6 +109,17 @@ define("UPPMINFO", [
          closedir($dir);
      }
 
+     public static function downloadAutoloader(){
+         if (file_exists("autoload.php")) {
+             Colors::info("The file: 'autoload.php' already exists. Do you want to override it? [YES,No]");
+             if (!(readline() == "" || strtoupper(readline()) == "YES"))
+                return;
+
+         }
+
+         file_put_contents("autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
+     }
+
  }
 
  ?>
@@ -151,7 +162,7 @@ define("UPPMINFO", [
         $keywords = explode(',', readline());
 
         self::initProject($name, $version, $description, $author, $keywords);
-        
+        Colors::info("You can install the autoloader by typing: uppm autoload");
     }
 
     public static function initProject(
@@ -665,6 +676,14 @@ class Build {
         $this->outputLocation = $outputLocation;
     }
 
+    public function getOutputFile(): string {
+        return $this->outputFile;
+    }
+
+    public function getOutputLocation(): string {
+        return $this->outputLocation;
+    }
+
 }
 
 ?>
@@ -772,6 +791,101 @@ class Archive {
 }
 
 ?>
+<?php
+class Runner {
+
+    private $file = null;
+    private $args = [];
+    private $runCommands = [];
+    private $compileFirst = false;
+    private $uppmLogs = true;
+    private $exec = [];
+
+
+    public function run(){
+        global $CLI;
+        if ($this->file == null) {
+            if (!$this->compileFirst)
+                Colors::error("Compile File not set!");
+            else {
+                if ($this->uppmLogs)
+                    Colors::info("Compiling...");
+                $build = $CLI->getCommands()["build"]();
+                $this->file = "./".$build->getOutputLocation()."/".$build->getOutputFile();
+            }
+        }
+
+        foreach ($this->exec as $exec)
+            system($exec);
+
+
+        $command = "php ";
+        $command .= $this->file;
+        foreach ($this->args as $arg)
+            $command .= " ".$arg;
+
+        if ($this->uppmLogs)
+            Colors::info("Running PHP-Project with command: ".$command);
+        system($command);
+    }
+
+    public function setFile(string $file): Runner {
+        $this->file = $file;
+        return $this;
+    }
+
+    public function setArgs(array $args): Runner {
+        $this->args = $args;
+        return $this;
+    }
+
+    public function setRunCommands(array $runCommands): Runner {
+        $this->runCommands = $runCommands;
+        return $this;
+    }
+
+    public function setCompileFirst(bool $compileFirst): Runner {
+        $this->compileFirst = $compileFirst;
+        return $this;
+    }
+
+    public function getFile(): string {
+        return $this->file;
+    }
+
+    public function getArgs(): array {
+        return $this->args;
+    }
+
+    public function getRunCommands(): array {
+        return $this->runCommands;
+    }
+
+    public function getCompileFirst(): bool {
+        return $this->compileFirst;
+    }
+
+    public function isUppmLogs(): bool {
+        return $this->uppmLogs;
+    }
+
+    public function setUppmLogs(bool $uppmLogs): void {
+        $this->uppmLogs = $uppmLogs;
+    }
+
+    public function getExec(): array {
+        return $this->exec;
+    }
+
+    public function setExec(array $exec): void {
+        $this->exec = $exec;
+    }
+
+
+}
+
+?>
+
 <?php
 /**
  * - ULOLEPHPPACKAGEMANAGER -
@@ -1021,13 +1135,36 @@ $CLI->register("serve", function(){
     Colors::done("Binding on $port");
     $exec= "cd $directory
     php -S $host:$port -t ./ $routerFile";
+
     system($exec);
     exec($exec);
     shell_exec($exec);
 
     Colors::error("Couldn't start the webserver!");
 
-}, "testserver");
+}, "A simple Testserver. It's using the PHPs included one! Please enable exec for it if you didn't.");
+
+$CLI->register("autoload", function(){
+    Tools::downloadAutoloader();
+});
+
+$CLI->register("run", function() {
+    global $uppmconf;
+    if ($uppmconf != null) {
+        $runner = new Runner();
+        if ($uppmconf->run->file != null)
+            $runner->setFile($uppmconf->run->file);
+        if ($uppmconf->run->arguments != null)
+            $runner->setArgs($uppmconf->run->arguments);
+        if ($uppmconf->run->exec != null)
+            $runner->setExec($uppmconf->run->exec);
+        if ($uppmconf->run->compile_first != null)
+            $runner->setCompileFirst($uppmconf->run->compile_first);
+        $runner->run();
+    } else
+        Colors::error("Running is not initialized!");
+
+});
 
 $CLI->register("build", function() {
     global $uppmconf;
@@ -1047,6 +1184,7 @@ $CLI->register("build", function() {
         $build->setIgnoredFiles($uppmconf->build->ignored_files);
 
     $build->build();
+    return $build;
 }, "Build to a .phar file");
 
 $CLI->register("archive", function () {
@@ -1066,6 +1204,12 @@ $CLI->register("archive", function () {
     $archive->setIgnore($ignore);
     $archive->build($source, $destination);
 }, "Archives the project!");
+
+$CLI->register("deploy", function () {
+
+}, "Deploy:
+        SOON
+");
 
 if (isset($argv[1]))
     $CLI->run($argv[1], $argv);

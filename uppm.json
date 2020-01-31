@@ -20,7 +20,9 @@
         "Phar : phar.readonly = Off (Enable in php.ini)"
     ],
     "repositories": {},
-    "modules": {},
+    "modules": {
+        "phpmailer": "1.0"
+    },
     "initscripts": [],
     "build": {
         "main": "uppm",
@@ -39,6 +41,14 @@
             ".gitignore",
             ".idea",
             ".git"
+        ]
+    },
+    "run": {
+        "compile_first": true,
+        "exec": [],
+        "arguments": [
+            "install",
+            "phpmailer"
         ]
     }
 }

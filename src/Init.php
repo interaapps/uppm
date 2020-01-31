@@ -37,7 +37,7 @@
         $keywords = explode(',', readline());
 
         self::initProject($name, $version, $description, $author, $keywords);
-        
+        Colors::info("You can install the autoloader by typing: uppm autoload");
     }
 
     public static function initProject(

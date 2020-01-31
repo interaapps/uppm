@@ -125,13 +125,36 @@ $CLI->register("serve", function(){
     Colors::done("Binding on $port");
     $exec= "cd $directory
     php -S $host:$port -t ./ $routerFile";
+
     system($exec);
     exec($exec);
     shell_exec($exec);
 
     Colors::error("Couldn't start the webserver!");
 
-}, "testserver");
+}, "A simple Testserver. It's using the PHPs included one! Please enable exec for it if you didn't.");
+
+$CLI->register("autoload", function(){
+    Tools::downloadAutoloader();
+});
+
+$CLI->register("run", function() {
+    global $uppmconf;
+    if ($uppmconf != null) {
+        $runner = new Runner();
+        if ($uppmconf->run->file != null)
+            $runner->setFile($uppmconf->run->file);
+        if ($uppmconf->run->arguments != null)
+            $runner->setArgs($uppmconf->run->arguments);
+        if ($uppmconf->run->exec != null)
+            $runner->setExec($uppmconf->run->exec);
+        if ($uppmconf->run->compile_first != null)
+            $runner->setCompileFirst($uppmconf->run->compile_first);
+        $runner->run();
+    } else
+        Colors::error("Running is not initialized!");
+
+});
 
 $CLI->register("build", function() {
     global $uppmconf;
@@ -151,6 +174,7 @@ $CLI->register("build", function() {
         $build->setIgnoredFiles($uppmconf->build->ignored_files);
 
     $build->build();
+    return $build;
 }, "Build to a .phar file");
 
 $CLI->register("archive", function () {

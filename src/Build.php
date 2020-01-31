@@ -98,6 +98,14 @@ class Build {
         $this->outputLocation = $outputLocation;
     }
 
+    public function getOutputFile(): string {
+        return $this->outputFile;
+    }
+
+    public function getOutputLocation(): string {
+        return $this->outputLocation;
+    }
+
 }
 
 ?>
