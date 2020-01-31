@@ -215,8 +215,8 @@ $CLI->register("info", function(){
 
     echo "\nDependencies: \n";
     foreach ($uppmconf->modules as $module=>$ver)
-        echo "- ".Colors::OKBLUE.$module." ".Colors::YELLOW.$ver.Colors::ENDC;
-    echo "\n";
+        echo "- ".Colors::OKBLUE.$module." ".Colors::YELLOW.$ver.Colors::ENDC."\n";
+
     echo Colors::GREEN."---== ".Colors::TURQUIOUS."-==-".Colors::GREEN." ==---".Colors::ENDC."\n";
 });
 
