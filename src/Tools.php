@@ -86,6 +86,18 @@
          closedir($dir);
      }
 
+     public static function downloadAutoloader(){
+         if (file_exists("autoload.php")) {
+             Colors::info("The file: 'autoload.php' already exists. Do you want to override it? [YES,No]");
+             if (!(readline() == "" || strtoupper(readline()) == "YES"))
+                return;
+
+         }
+
+
+         file_put_contents("autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
+     }
+
  }
 
  ?>
