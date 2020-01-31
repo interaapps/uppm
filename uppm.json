@@ -1,6 +1,6 @@
 {
     "name": "uppm",
-    "version": "1.1",
+    "version": "1.1.1",
     "description": "UPPM Is a PHP Package Manager with many useful tools!",
     "author": "InteraApps",
     "organization": "InteraApps",
@@ -46,9 +46,6 @@
     "run": {
         "compile_first": true,
         "exec": [],
-        "arguments": [
-            "install",
-            "phpmailer"
-        ]
+        "arguments": []
     }
 }

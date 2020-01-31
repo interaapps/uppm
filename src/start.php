@@ -16,7 +16,7 @@ $serverInfo = @json_decode(@file_get_contents("https://raw.githubusercontent.com
 ])));
 
 define("UPPMINFO", [
-    "version"=>"1.0",
+    "version"=>"1.1.1",
     "server"=> (isset($serverInfo->list)) ? $serverInfo->list : false
 ]);
 
