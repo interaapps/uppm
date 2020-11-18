@@ -4,7 +4,7 @@ $uppmlock = [];
 if (file_exists("uppm.locks.json"))
     $uppmlock = json_decode(file_get_contents("uppm.locks.json"));
 
-$uppmconf = [];
+$uppmconf = (object)[];
 if (file_exists("uppm.json"))
     $uppmconf = json_decode(file_get_contents("uppm.json"));
 

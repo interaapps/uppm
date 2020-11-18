@@ -174,7 +174,7 @@ $CLI->register("build", function() {
         $build->setIgnoredFiles($uppmconf->build->ignored_files);
 
     $build->build();
-    return $build;
+    return "";
 }, "Build to a .phar file");
 
 $CLI->register("archive", function () {
