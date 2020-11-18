@@ -42,10 +42,7 @@ php uppm install github:user/mypackage
 ```bash
 php uppm install github:user/mypackage+master
 ``` 
-#### Composer (Packagist)
-```bash
-php uppm install composer:user/package@v1.0
-```
+
 #### Web
 ```bash
 php uppm install web:https://user.com/mypackage.zip

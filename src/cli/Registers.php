@@ -220,6 +220,19 @@ $CLI->register("info", function(){
     echo Colors::GREEN."---== ".Colors::TURQUIOUS."-==-".Colors::GREEN." ==---".Colors::ENDC."\n";
 });
 
+$CLI->register("lock", function(){
+    if (file_exists("uppm.locks.json"))
+        unlink("uppm.locks.json");
+    foreach (scandir("modules") as $folder){
+        if ($folder != '.' && $folder != '..') {
+            if(file_exists("modules/".$folder."/uppm.json")) {
+                Colors::info("Writing $folder information (Namespaces, cli-scripts...) into locks.");
+                Tools::lockFile(json_decode(file_get_contents("modules/".$folder."/uppm.json")));
+            }
+        }
+    }
+});
+
 if (isset($argv[1]))
     $CLI->run($argv[1], $argv);
 else

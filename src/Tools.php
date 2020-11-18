@@ -69,7 +69,7 @@
      }
 
 
-     function copyDir($src, $dst) {
+     public static function copyDir($src, $dst) {
          $dir = opendir($src);
          @mkdir($dst);
 
@@ -95,6 +95,52 @@
          }
 
          file_put_contents("autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
+     }
+
+     public static function lockFile($uppmJson){
+        $lockFile = Configs::getLockFile();
+        if (is_array($lockFile->packages) || $lockFile->packages == null) {
+            $lockFile->packages = (object) [];
+        }
+        $lockFile->packages->{$uppmJson->name} = $uppmJson->version;
+        if (isset($uppmJson)) {
+
+            if (isset($uppmJson->directnamespaces)) {
+                if (is_array($uppmJson->directnamespaces)) {
+                    $uppmJson->directnamespaces = (object) [];
+                }
+
+                foreach ($uppmJson->directnamespaces as $key => $val)
+                    $lockFile->directnamespaces->{$key} = $val;
+            }
+            /**
+             * Namespace bindings
+             */
+            if (isset($uppmJson->namespace_bindings)) {
+                if (is_array($uppmJson->namespace_bindings)) {
+                    $uppmJson->namespace_bindings = (object) [];
+                }
+
+                foreach ($uppmJson->namespace_bindings as $key => $val) {
+                    if (!isset($lockFile->namespace_bindings))
+                        $lockFile->namespace_bindings = (object) [];
+                    $lockFile->namespace_bindings->{$key} = 'modules/'.$uppmJson->name.'/'. str_replace("\\", "/", $val) ;
+                }
+            }
+            /**
+             * CLI Scripts
+             */
+            if (isset($uppmJson->cli_scripts)) {
+                if (is_array($uppmJson->cli_scripts)) {
+                    $uppmJson->cli_scripts = (object)[];
+                }
+
+                foreach ($uppmJson->cli_scripts as $key => $val)
+                    $lockFile->cli_scripts->{$key} = $val;
+            }
+        }
+        
+        file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
      }
 
  }

@@ -37,19 +37,6 @@
         } elseif($version == ":web") {
             $this->type = "web";
             $this->downloadUrl = $name;
-        } elseif ($version == ":composer" || $version == ":packagist") {
-            $this->webContext = stream_context_create([
-                "http" => [
-                    "method" => "GET",
-                    "header" => "User-Agent: request"
-                ]
-            ]);
-
-            $this->enddir = "::PACKAGIST";
-
-            $this->type = "web";
-            $package = json_decode(file_get_contents("https://repo.packagist.org/p/".Tools::getStringBetween($name, "", "@").".json", false, $this->webContext));
-            $this->downloadUrl = $package->packages->{Tools::getStringBetween($name, "", "@")}->{Tools::getStringBetween($name, "@", "")}->dist->url;
         } elseif(UPPMINFO["server"] !== false) {
             $list = @json_decode(@file_get_contents((UPPMINFO["server"])), true);
             global $uppmconf;
@@ -77,11 +64,11 @@
             $res = $zip->open("UPPMtemp_module.zip");
             if ($res === true) {
                 if ($output) Tools::statusIndicator(20, 100);
-                Tools::deleteDir("UPPMtempdir");
+                    Tools::deleteDir("UPPMtempdir");
                 if ($output) Tools::statusIndicator(25, 100);
-                $zip->extractTo("UPPMtempdir");
+                    $zip->extractTo("UPPMtempdir");
                 if ($output) Tools::statusIndicator(30, 100);
-                $zip->close();
+                    $zip->close();
 
                 $files = scandir('UPPMtempdir');
                 $dirInZip = false;
@@ -94,47 +81,34 @@
                     return $counter;
                 })($files);
 
-                $composerconf = false;
-
+                
                 if (file_exists("UPPMtempdir/uppm.json"))
                     $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/uppm.json"));
-                else if (file_exists("UPPMtempdir/composer.json"))
-                    $composerconf = json_decode(file_get_contents("UPPMtempdir/composer.json"));
-
+                
                 if ($count == 1) {
                     foreach($files as $file) {
-                        if (is_dir("UPPMtempdir/".$file)) {
-                            if ($file != "." && $file != "..") {
-                                $dirInZip = $file;
-                                if (file_exists("UPPMtempdir/".$file."/uppm.json"))
-                                    $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/".$file."/uppm.json"));
-                                if (file_exists("UPPMtempdir/".$file."/composer.json")) {
-                                    $composerconf = json_decode(file_get_contents("UPPMtempdir/" . $file . "/composer.json"));
-                                }
-                            }
+                        if (is_dir("UPPMtempdir/".$file) && $file != "." && $file != "..") {
+                            $dirInZip = $file;
+                            if (file_exists("UPPMtempdir/".$file."/uppm.json"))
+                                $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/".$file."/uppm.json"));
                         }
                     }
                 }
 
-                if ($output) Tools::statusIndicator(50, 100);
+                if ($output)
+                    Tools::statusIndicator(50, 100);
 
 
-
-                if ($this->enddir !== false) {
-                    if ($this->enddir == "::PACKAGIST") {
-                        if ($composerconf !== false) {
-                            $enddir = "modules/".Tools::getStringBetween($composerconf->name, "/", "");
-                        }
-                    }
-                }
-
-                if (isset($tempuppmconf->directory))
+                if (isset($tempuppmconf->directory)){
                     $enddir = $tempuppmconf->directory;
-                elseif (isset($tempuppmconf->name))
+                } elseif (isset($tempuppmconf->name)){
                     $enddir = "modules/".$tempuppmconf->name;
-                if (is_dir($enddir) && $enddir!="./" )
-                    Tools::deleteDir($enddir);
+                }
                 
+                if (is_dir($enddir) && $enddir!="./" ){
+                    Tools::deleteDir($enddir);
+                }
+
                 if (!is_dir("modules"))
                     mkdir("modules");
 
@@ -184,84 +158,16 @@
                     file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 }
 
-                if (isset($composerconf->require)) {
-                    Colors::info("Checking composer dependencies");
-                    $config = Configs::getNPPMFile();
-                    foreach ($composerconf->require as $name=>$version) {
-                        if (!isset($uppmconf->{$name})) {
-                            Colors::info("Checking $name");
-                            if (strpos($name, "/") !== false) {
-
-                                Colors::info("Installing dependency ".$name."@".str_replace("^", "v", $version));
-
-                                $package = json_decode(file_get_contents("https://repo.packagist.org/p/".$name.".json", false, $this->webContext));
-
-                                if ( isset($package->{str_replace("^", "v", $version)}->dist->url) )
-                                    (new Install($name . "@" . str_replace("^", "v", $version), ":composer"))->download();
-                                elseif ( isset($package->{str_replace("^", "", $version).""}->dist->url) )
-                                    (new Install($name . "@" . str_replace("^", "", $version)."", ":composer"))->download();
-                                elseif ( isset($package->{str_replace("^", "v", $version).".0"}->dist->url) )
-                                    (new Install($name . "@" . str_replace("^", "v", $version).".0", ":composer"))->download();
-                                else
-                                    Colors::error("Couln't find the dependency $name with the version $version");
-
-                                Colors::done("Installed dependency $name");
-
-                                if (strpos($version, "|") !== false)
-                                    $version = Tools::getStringBetween($version, "", "|");
-
-                                Colors::info("Adding to uppm.json (modules)");
-                                $config->modules->{$name . "@" . str_replace("^", "v", $version)} = ":composer";
-                            }
-                        } else
-                            Colors::info("Dependency $name $version is installed");
-                    }
-                    file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
-                }
-
                 if ($output) Tools::statusIndicator(60, 100);
-
-                $lockFile = Configs::getLockFile();
-                if (is_array($lockFile->packages) || $lockFile->packages == null) {
-                    $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
-                }
-                $lockFile->packages->{$this->name} = $this->version;
-                if (isset($tempuppmconf)) {
-
-                    if (isset($tempuppmconf->directnamespaces)) {
-                        if (is_array($tempuppmconf->directnamespaces)) {
-                            $tempuppmconf->directnamespaces = ["TEMPNULL-------"=>"TEMPNULL-------"];
-                        }
-
-                        foreach ($tempuppmconf->directnamespaces as $key => $val)
-                            $lockFile->directnamespaces->{$key} = $val;
-                    }
-                    if (isset($tempuppmconf->cli_scripts)) {
-                        if (is_array($tempuppmconf->cli_scripts)) {
-                            $tempuppmconf->cli_scripts = ["TEMPNULL-------"=>"TEMPNULL-------"];
-                        }
-
-                        foreach ($tempuppmconf->cli_scripts as $key => $val)
-                            $lockFile->cli_scripts->{$key} = $val;
-                    }
-                }
+                
+                Colors::info("Writing $tempuppmconf->name information (Namespaces, cli-scripts...) into locks.");
+                Tools::lockFile($tempuppmconf);
 
                 rmdir("UPPMtempdir");
                 unlink("UPPMtemp_module.zip");
 
                 if ($output) Tools::statusIndicator(80, 100);
 
-                if ($this->enddir !== false && $this->enddir == "::PACKAGIST" && $composerconf !== false && isset($composerconf->autoload->{"psr-4"})) {
-                    foreach ($composerconf->autoload->{"psr-4"} as $namespace=>$paths) {
-                        foreach ( scandir($enddir."/".$paths) as $file ) {
-                            if ($file != "." && $file != ".."){
-                                $lockFile->directnamespaces->{$namespace.str_replace(".php","",$file)} = $enddir."/".$paths."/".$file;
-                            }
-                        }
-                    }
-                }
-
-                file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
                 if ($output) Tools::statusIndicator(100, 100);
 
                 echo "Done\n";
@@ -288,14 +194,8 @@
                     $config->modules->{$name} = ":web";
                 file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":web"))->download();
-            } elseif ($type=="composer" || $type=="packagist") {
-                if (is_array($config->modules))
-                    $config->modules = [$name=>":composer"];
-                else
-                    $config->modules->{$name} = ":composer";
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
-                (new Install($name, ":composer"))->download();
             }
+            
         } else {
             global $uppmconf;
 

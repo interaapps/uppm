@@ -21,6 +21,7 @@
     ],
     "repositories": {},
     "modules": {
+        "uloleorm": "2.0"
     },
     "initscripts": [],
     "build": {

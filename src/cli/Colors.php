@@ -29,10 +29,10 @@
                   BG_YELLOW = "\033[43m",
                   BG_BLACK = "\033[40m";
         
-    public const PREFIX_DONE = "\033[92m᮰ Done\033[0m: ",
-                 PREFIX_WARN = "\033[93m᮰ WARNING\033[0m: ",
-                 PREFIX_INFO = "\033[36m᮰ INFO\033[0m: ",
-                 PREFIX_ERROR = "\033[91m᮰ ERROR\033[0m: ";
+    public const PREFIX_DONE = "\033[92m Done\033[0m: ",
+                 PREFIX_WARN = "\033[93m WARNING\033[0m: ",
+                 PREFIX_INFO = "\033[36m INFO\033[0m: ",
+                 PREFIX_ERROR = "\033[91m ERROR\033[0m: ";
 
     public static function info($str){
         echo self::PREFIX_INFO.$str.self::ENDC."\n";

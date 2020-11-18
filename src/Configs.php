@@ -43,12 +43,9 @@
             "description": "",
             "author": "",
             "keywords": [],
-            "modules": {
-                
-            },
-            "namespaces": {
-                
-            }
+            "modules": { },
+            "namespace_bindings": { },
+            "namespaces": { }
         }
         ');
         return json_decode(file_get_contents("uppm.json"));
