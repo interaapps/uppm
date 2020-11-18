@@ -1057,11 +1057,7 @@ $CLI->register("update", function() {
 
 $CLI->register("linuxglobal", function() {
     Colors::info("This action requires root permissions (sudo)");
-    exec("
-    sudo wget --output-document=tmp__uppm https://raw.githubusercontent.com/interaapps/uppm/master/uppm
-    sudo mv tmp__uppm /usr/local/bin/uppm
-    sudo chmod 777 /usr/local/bin/uppm
-    ");
+    exec("sudo wget --output-document=tmp__uppm https://raw.githubusercontent.com/interaapps/uppm/master/uppm && sudo mv tmp__uppm /usr/local/bin/uppm && sudo chmod 777 /usr/local/bin/uppm");
 }, "Installing globally on linux ".Colors::RED."* ".Colors::YELLOW."Root required!");
 
 $CLI->register("serve", function(){
