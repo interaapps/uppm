@@ -18,7 +18,6 @@ spl_autoload_register(function($class) {
     else if(isset($uppmlock->namespace_bindings)) {
         foreach ($uppmlock->namespace_bindings as $namespaceBinding => $folder){
             if (substr($class, 0, strlen($namespaceBinding)) === $namespaceBinding) {
-                echo $folder.'/'.$class.".php";
                 if (file_exists($folder.'/'.$class.".php")) {
                     @include_once $folder.'/'.$class.".php";
                     break;
