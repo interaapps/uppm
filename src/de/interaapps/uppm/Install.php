@@ -106,11 +106,14 @@ use de\interaapps\uppm\cli\Colors;
                     $enddir = $tempuppmconf->directory;
                 } elseif (isset($tempuppmconf->name)){
                     $enddir = UPPM_CURRENT_DIRECTORY."modules/".$tempuppmconf->name;
+                } else {
+                    Colors::error("Couldn't find a folder to put the dependency in. Is the dependencies uppm.json correct?");
+                    return false;
                 }
                 
                 // Deleting existing modules/{package} folder
-                if (is_dir(UPPM_CURRENT_DIRECTORY.$enddir) && $enddir!="./" ){
-                    Tools::deleteDir(UPPM_CURRENT_DIRECTORY.$enddir);
+                if (is_dir($enddir) && $enddir != UPPM_CURRENT_DIRECTORY."./" ){
+                    Tools::deleteDir($enddir);
                 }
 
                 if (!is_dir(UPPM_CURRENT_DIRECTORY."modules"))

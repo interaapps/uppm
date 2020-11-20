@@ -374,18 +374,23 @@ use de\interaapps\uppm\cli\Colors;
                 if (isset($tempuppmconf->directory)){
                     $enddir = $tempuppmconf->directory;
                 } elseif (isset($tempuppmconf->name)){
-                    $enddir = "modules/".$tempuppmconf->name;
+                    $enddir = UPPM_CURRENT_DIRECTORY."modules/".$tempuppmconf->name;
+                } else {
+                    Colors::error("Couldn't find a folder to put the dependency in. Is the dependencies uppm.json correct?");
+                    return false;
                 }
                 
-                if (is_dir($enddir) && $enddir!="./" ){
+                // Deleting existing modules/{package} folder
+                if (is_dir($enddir) && $enddir != UPPM_CURRENT_DIRECTORY."./" ){
                     Tools::deleteDir($enddir);
                 }
 
-                if (!is_dir("modules"))
-                    mkdir("modules");
+                if (!is_dir(UPPM_CURRENT_DIRECTORY."modules"))
+                    mkdir(UPPM_CURRENT_DIRECTORY."modules");
 
                 $copy = false;
 
+                // If a dependency wants to override the folder (Example: old ulole-framework)
                 if ($output && (isset($tempuppmconf->directory) ? $tempuppmconf->directory : "") == "./") {
                     echo "\nThis module will be moved to this directory: ".getcwd()." Do you want that? [yes,NO] ";
                     if (strtolower(readline()) != "yes" && strtolower(readline()) != "y")
@@ -437,7 +442,7 @@ use de\interaapps\uppm\cli\Colors;
 
                 Tools::deleteDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 // rmdir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
-                unlink("UPPMtemp_module.zip");
+                unlink(UPPM_CURRENT_DIRECTORY."UPPMtemp_module.zip");
 
                 if ($output) Tools::statusIndicator(80, 100);
 
