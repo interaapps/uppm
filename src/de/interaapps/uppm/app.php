@@ -18,7 +18,7 @@ if (Phar::running() !== "") {
         else if(file_exists("../../../../src/".str_replace("\\","/",$class).".php"))
             @include_once   "../../../../src/".str_replace("\\","/",$class).".php";
     });
-} else
+} else if (file_exists("autoload.php") && !defined('UPPM_SINGLE_FILE_INSTANCE'))
     require "autoload.php";
 
 ini_set('phar.readonly',0);

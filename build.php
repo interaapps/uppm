@@ -3,7 +3,8 @@
  *
  */
 $output = '#!/usr/bin/env php
-';
+<?php namespace de\interaapps\uppm;
+define("UPPM_SINGLE_FILE_INSTANCE", 1); ?>';
 
 $files = [
     "Tools.php",
