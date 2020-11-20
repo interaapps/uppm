@@ -1,4 +1,7 @@
 <?php
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 /**
  * - ULOLEPHPPACKAGEMANAGER -
  * 
@@ -55,22 +58,22 @@
 
     public function download($output=true) {
         global $uppmconf;
-        $enddir = "modules/cbf_".rand(0000,9999); // cbf = Cant be fetched
+        $enddir = UPPM_CURRENT_DIRECTORY."modules/cbf_".rand(0000,9999); // cbf = Cant be fetched
         if ($output) Tools::statusIndicator(5, 100);
-        file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
+        file_put_contents(UPPM_CURRENT_DIRECTORY."UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
         if (class_exists('ZipArchive')) {
-            $zip = new ZipArchive;
+            $zip = new \ZipArchive;
             if ($output) Tools::statusIndicator(10, 100);
-            $res = $zip->open("UPPMtemp_module.zip");
+            $res = $zip->open(UPPM_CURRENT_DIRECTORY."UPPMtemp_module.zip");
             if ($res === true) {
                 if ($output) Tools::statusIndicator(20, 100);
-                    Tools::deleteDir("UPPMtempdir");
+                    Tools::deleteDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 if ($output) Tools::statusIndicator(25, 100);
-                    $zip->extractTo("UPPMtempdir");
+                    $zip->extractTo(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 if ($output) Tools::statusIndicator(30, 100);
                     $zip->close();
 
-                $files = scandir('UPPMtempdir');
+                $files = scandir(UPPM_CURRENT_DIRECTORY.'UPPMtempdir');
                 $dirInZip = false;
 
                 $count = (function($files) {
@@ -82,15 +85,15 @@
                 })($files);
 
                 
-                if (file_exists("UPPMtempdir/uppm.json"))
-                    $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/uppm.json"));
+                if (file_exists(UPPM_CURRENT_DIRECTORY."UPPMtempdir/uppm.json"))
+                    $tempuppmconf = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."UPPMtempdir/uppm.json"));
                 
                 if ($count == 1) {
                     foreach($files as $file) {
-                        if (is_dir("UPPMtempdir/".$file) && $file != "." && $file != "..") {
+                        if (is_dir(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$file) && $file != "." && $file != "..") {
                             $dirInZip = $file;
-                            if (file_exists("UPPMtempdir/".$file."/uppm.json"))
-                                $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/".$file."/uppm.json"));
+                            if (file_exists(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$file."/uppm.json"))
+                                $tempuppmconf = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$file."/uppm.json"));
                         }
                     }
                 }
@@ -105,6 +108,7 @@
                     $enddir = "modules/".$tempuppmconf->name;
                 }
                 
+                // Deleting existing modules/{package} folder
                 if (is_dir($enddir) && $enddir!="./" ){
                     Tools::deleteDir($enddir);
                 }
@@ -114,24 +118,25 @@
 
                 $copy = false;
 
+                // If a dependency wants to override the folder (Example: old ulole-framework)
                 if ($output && (isset($tempuppmconf->directory) ? $tempuppmconf->directory : "") == "./") {
                     echo "\nThis module will be moved to this directory: ".getcwd()." Do you want that? [yes,NO] ";
                     if (strtolower(readline()) != "yes" && strtolower(readline()) != "y")
                         die("Cancelled");
                     $copy = true;
-                    $enddir = getcwd()."/";
+                    $enddir = UPPM_CURRENT_DIRECTORY;
                 }
 
                 if ($dirInZip !== false) {
                     if ($copy)
-                        Tools::copyDir("UPPMtempdir/".$dirInZip, $enddir);
+                        Tools::copyDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$dirInZip, $enddir);
                     else
-                        rename("UPPMtempdir/".$dirInZip, $enddir);
+                        rename(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$dirInZip, $enddir);
                 } else {
                     if ($copy)
-                        Tools::copyDir("UPPMtempdir", $enddir);
+                        Tools::copyDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir", $enddir);
                     else
-                        rename("UPPMtempdir", $enddir);
+                        rename(UPPM_CURRENT_DIRECTORY."UPPMtempdir", $enddir);
                 }
 
                 if (isset($tempuppmconf->modules)) {
@@ -155,7 +160,7 @@
                         } else
                             Colors::info("Dependency $name $version is installed");
                     }
-                    file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                    file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 }
 
                 if ($output) Tools::statusIndicator(60, 100);
@@ -163,7 +168,8 @@
                 Colors::info("Writing $tempuppmconf->name information (Namespaces, cli-scripts...) into locks.");
                 Tools::lockFile($tempuppmconf);
 
-                rmdir("UPPMtempdir");
+                Tools::deleteDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
+                // rmdir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 unlink("UPPMtemp_module.zip");
 
                 if ($output) Tools::statusIndicator(80, 100);
@@ -185,14 +191,14 @@
                     $config->modules = [$name=>":github"];
                 else
                     $config->modules->{$name} = ":github";
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":github"))->download();
             } elseif ($type=="web") {
                 if (is_array($config->modules))
                     $config->modules = [$name=>":web"];
                 else
                     $config->modules->{$name} = ":web";
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":web"))->download();
             }
             
@@ -223,7 +229,7 @@
                 else
                     $config->modules->{$name} = $version;
                 
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, $version))->download();
             } else {
                 echo "Package not found";

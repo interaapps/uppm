@@ -7,13 +7,14 @@
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
 
  class Configs {
     public static function getLockFile() {
-        if (file_exists("uppm.locks.json"))
-            return json_decode(file_get_contents("uppm.locks.json"));
+        if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.locks.json"))
+            return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json"));
         
-        file_put_contents("uppm.locks.json",'
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json",'
         {
             "init_scripts": [
         
@@ -29,14 +30,14 @@
             }
         }
         ');
-        return json_decode(file_get_contents("uppm.locks.json"));
+        return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json"));
     }
 
     public static function getNPPMFile() {
-        if (file_exists("uppm.json"))
-            return json_decode(file_get_contents("uppm.json"));
+        if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.json"))
+            return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.json"));
         
-        file_put_contents("uppm.json",'
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json",'
         {
             "name": "abc",
             "version": "1.0",
@@ -48,7 +49,7 @@
             "namespaces": { }
         }
         ');
-        return json_decode(file_get_contents("uppm.json"));
+        return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.json"));
     }
  }
  ?>

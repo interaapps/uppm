@@ -1,26 +1,3 @@
-#!/usr/bin/env php
-<?php
-$uppmlock = [];
-if (file_exists("uppm.locks.json"))
-    $uppmlock = json_decode(file_get_contents("uppm.locks.json"));
-
-$uppmconf = (object)[];
-if (file_exists("uppm.json"))
-    $uppmconf = json_decode(file_get_contents("uppm.json"));
-
-$serverInfo = @json_decode(@file_get_contents("https://raw.githubusercontent.com/interaapps/uppm-packages/master/uppm.json?".rand(00000, 99999), false, stream_context_create([
-    "http" => [
-        "method" => "GET",
-        "header" => "User-Agent: request"
-    ]
-])));
-
-define("UPPMINFO", [
-    "version"=>"1.2.0",
-    "server"=> (isset($serverInfo->list)) ? $serverInfo->list : false
-]);
-
-?>
 <?php
 /**
  * - ULOLEPHPPACKAGEMANAGER -
@@ -29,6 +6,9 @@ define("UPPMINFO", [
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 
  class Tools {
 
@@ -110,14 +90,14 @@ define("UPPMINFO", [
      }
 
      public static function downloadAutoloader(){
-         if (file_exists("autoload.php")) {
+         if (file_exists(UPPM_CURRENT_DIRECTORY."autoload.php")) {
              Colors::info("The file: 'autoload.php' already exists. Do you want to override it? [YES,No]");
              if (!(readline() == "" || strtoupper(readline()) == "YES"))
                 return;
 
          }
 
-         file_put_contents("autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
+         file_put_contents(UPPM_CURRENT_DIRECTORY."autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
      }
 
      public static function lockFile($uppmJson){
@@ -163,7 +143,7 @@ define("UPPMINFO", [
             }
         }
         
-        file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
      }
 
  }
@@ -177,6 +157,9 @@ define("UPPMINFO", [
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 
  class Init {
 
@@ -238,13 +221,14 @@ define("UPPMINFO", [
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
 
  class Configs {
     public static function getLockFile() {
-        if (file_exists("uppm.locks.json"))
-            return json_decode(file_get_contents("uppm.locks.json"));
+        if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.locks.json"))
+            return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json"));
         
-        file_put_contents("uppm.locks.json",'
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json",'
         {
             "init_scripts": [
         
@@ -260,14 +244,14 @@ define("UPPMINFO", [
             }
         }
         ');
-        return json_decode(file_get_contents("uppm.locks.json"));
+        return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json"));
     }
 
     public static function getNPPMFile() {
-        if (file_exists("uppm.json"))
-            return json_decode(file_get_contents("uppm.json"));
+        if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.json"))
+            return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.json"));
         
-        file_put_contents("uppm.json",'
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json",'
         {
             "name": "abc",
             "version": "1.0",
@@ -279,11 +263,14 @@ define("UPPMINFO", [
             "namespaces": { }
         }
         ');
-        return json_decode(file_get_contents("uppm.json"));
+        return json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.json"));
     }
  }
  ?>
 <?php
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 /**
  * - ULOLEPHPPACKAGEMANAGER -
  * 
@@ -340,22 +327,22 @@ define("UPPMINFO", [
 
     public function download($output=true) {
         global $uppmconf;
-        $enddir = "modules/cbf_".rand(0000,9999); // cbf = Cant be fetched
+        $enddir = UPPM_CURRENT_DIRECTORY."modules/cbf_".rand(0000,9999); // cbf = Cant be fetched
         if ($output) Tools::statusIndicator(5, 100);
-        file_put_contents("UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
+        file_put_contents(UPPM_CURRENT_DIRECTORY."UPPMtemp_module.zip", file_get_contents($this->downloadUrl, false, $this->webContext));
         if (class_exists('ZipArchive')) {
-            $zip = new ZipArchive;
+            $zip = new \ZipArchive;
             if ($output) Tools::statusIndicator(10, 100);
-            $res = $zip->open("UPPMtemp_module.zip");
+            $res = $zip->open(UPPM_CURRENT_DIRECTORY."UPPMtemp_module.zip");
             if ($res === true) {
                 if ($output) Tools::statusIndicator(20, 100);
-                    Tools::deleteDir("UPPMtempdir");
+                    Tools::deleteDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 if ($output) Tools::statusIndicator(25, 100);
-                    $zip->extractTo("UPPMtempdir");
+                    $zip->extractTo(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 if ($output) Tools::statusIndicator(30, 100);
                     $zip->close();
 
-                $files = scandir('UPPMtempdir');
+                $files = scandir(UPPM_CURRENT_DIRECTORY.'UPPMtempdir');
                 $dirInZip = false;
 
                 $count = (function($files) {
@@ -367,15 +354,15 @@ define("UPPMINFO", [
                 })($files);
 
                 
-                if (file_exists("UPPMtempdir/uppm.json"))
-                    $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/uppm.json"));
+                if (file_exists(UPPM_CURRENT_DIRECTORY."UPPMtempdir/uppm.json"))
+                    $tempuppmconf = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."UPPMtempdir/uppm.json"));
                 
                 if ($count == 1) {
                     foreach($files as $file) {
-                        if (is_dir("UPPMtempdir/".$file) && $file != "." && $file != "..") {
+                        if (is_dir(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$file) && $file != "." && $file != "..") {
                             $dirInZip = $file;
-                            if (file_exists("UPPMtempdir/".$file."/uppm.json"))
-                                $tempuppmconf = json_decode(file_get_contents("UPPMtempdir/".$file."/uppm.json"));
+                            if (file_exists(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$file."/uppm.json"))
+                                $tempuppmconf = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$file."/uppm.json"));
                         }
                     }
                 }
@@ -404,19 +391,19 @@ define("UPPMINFO", [
                     if (strtolower(readline()) != "yes" && strtolower(readline()) != "y")
                         die("Cancelled");
                     $copy = true;
-                    $enddir = getcwd()."/";
+                    $enddir = UPPM_CURRENT_DIRECTORY;
                 }
 
                 if ($dirInZip !== false) {
                     if ($copy)
-                        Tools::copyDir("UPPMtempdir/".$dirInZip, $enddir);
+                        Tools::copyDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$dirInZip, $enddir);
                     else
-                        rename("UPPMtempdir/".$dirInZip, $enddir);
+                        rename(UPPM_CURRENT_DIRECTORY."UPPMtempdir/".$dirInZip, $enddir);
                 } else {
                     if ($copy)
-                        Tools::copyDir("UPPMtempdir", $enddir);
+                        Tools::copyDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir", $enddir);
                     else
-                        rename("UPPMtempdir", $enddir);
+                        rename(UPPM_CURRENT_DIRECTORY."UPPMtempdir", $enddir);
                 }
 
                 if (isset($tempuppmconf->modules)) {
@@ -440,7 +427,7 @@ define("UPPMINFO", [
                         } else
                             Colors::info("Dependency $name $version is installed");
                     }
-                    file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                    file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 }
 
                 if ($output) Tools::statusIndicator(60, 100);
@@ -448,7 +435,8 @@ define("UPPMINFO", [
                 Colors::info("Writing $tempuppmconf->name information (Namespaces, cli-scripts...) into locks.");
                 Tools::lockFile($tempuppmconf);
 
-                rmdir("UPPMtempdir");
+                Tools::deleteDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
+                // rmdir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 unlink("UPPMtemp_module.zip");
 
                 if ($output) Tools::statusIndicator(80, 100);
@@ -470,14 +458,14 @@ define("UPPMINFO", [
                     $config->modules = [$name=>":github"];
                 else
                     $config->modules->{$name} = ":github";
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":github"))->download();
             } elseif ($type=="web") {
                 if (is_array($config->modules))
                     $config->modules = [$name=>":web"];
                 else
                     $config->modules->{$name} = ":web";
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, ":web"))->download();
             }
             
@@ -508,7 +496,7 @@ define("UPPMINFO", [
                 else
                     $config->modules->{$name} = $version;
                 
-                file_put_contents("uppm.json", json_encode($config, JSON_PRETTY_PRINT));
+                file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.json", json_encode($config, JSON_PRETTY_PRINT));
                 (new Install($name, $version))->download();
             } else {
                 echo "Package not found";
@@ -527,6 +515,9 @@ define("UPPMINFO", [
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 
 class Build {
 
@@ -547,21 +538,21 @@ class Build {
 
         Colors::info("Building...");
 
-        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile))
-            unlink(getcwd()."/".$this->outputLocation."/".$this->outputFile);
-        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz"))
-            unlink(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz");
+        if (file_exists(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile))
+            unlink(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile);
+        if (file_exists(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile.".gz"))
+            unlink(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile.".gz");
 
-        if (!file_exists($this->outputLocation)) {
+        if (!file_exists(UPPM_CURRENT_DIRECTORY.$this->outputLocation)) {
             Colors::info("Creating dir: ".$this->outputLocation);
-            mkdir($this->outputLocation);
+            mkdir(UPPM_CURRENT_DIRECTORY.$this->outputLocation);
         }
 
         Colors::info("Initializing PHP-Phar");
-        $phar = new Phar(getcwd()."/".$this->outputLocation."/".$this->outputFile);
+        $phar = new \Phar(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile);
 
         Colors::info("BuildFromDirectory: ".$this->directory);
-        $phar->buildFromDirectory(getcwd()."/".$this->directory, '/^(?!(.*uppm_target))'.(function(){
+        $phar->buildFromDirectory(UPPM_CURRENT_DIRECTORY."".$this->directory, '/^(?!(.*uppm_target))'.(function(){
             $out = "";
             foreach ($this->ignoredDirectories as $directory)
                 $out .= '(?!(.*'.str_replace("/","\\/",$directory).'))';
@@ -576,20 +567,20 @@ class Build {
             Colors::warning("main haven't been found in uppm.json (\"build\": {\"main\": NULL (NOT FOUND)})");
 
 
-        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz")) {
+        if (file_exists(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile.".gz")) {
             Colors::info("Removing old ".$this->outputFile.".gz");
-            unlink(getcwd() . "/" . $this->outputLocation . "/" . $this->outputFile . ".gz");
+            unlink(UPPM_CURRENT_DIRECTORY . $this->outputLocation . "/" . $this->outputFile . ".gz");
         }
 
         Colors::info("Compressing...");
-        $phar->compress(Phar::GZ);
-        Colors::done("Built into the file ".getcwd()."/".$this->outputLocation."/".$this->outputFile);
+        $phar->compress(\Phar::GZ);
+        Colors::done("Built into the file ".UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile);
 
         foreach ($this->ignoredFiles as $file) {
             try {
                 Colors::info("Removing file in Phar: ".$file);
                 $phar->delete($file);
-            } catch (BadMethodCallException $e) {}
+            } catch (\BadMethodCallException $e) {}
         }
         Colors::done("Done!");
 
@@ -638,30 +629,35 @@ class Build {
  *
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use de\interaapps\uppm\cli\Colors;
 
 class Archive {
 
     private $ignore = [];
 
     public function build($source, $destination) : void {
-        if (!file_exists(getcwd()."/uppm_target"))
-            mkdir(getcwd()."/uppm_target");
-        if (!file_exists(getcwd()."/uppm_target/archives"))
-            mkdir(getcwd()."/uppm_target/archives");
+        if (!file_exists(UPPM_CURRENT_DIRECTORY."uppm_target"))
+            mkdir(UPPM_CURRENT_DIRECTORY."uppm_target");
+        if (!file_exists(UPPM_CURRENT_DIRECTORY."uppm_target/archives"))
+            mkdir(UPPM_CURRENT_DIRECTORY."uppm_target/archives");
 
-        $source = getcwd()."/".$source;
+        $source = UPPM_CURRENT_DIRECTORY.$source;
 
-        $destination = getcwd()."/uppm_target/archives/".$destination;
-        if (file_exists($destination))
-            unlink($destination);
+        $destination = UPPM_CURRENT_DIRECTORY."uppm_target/archives/".$destination;
+        if (file_exists(UPPM_CURRENT_DIRECTORY.$destination))
+            unlink(UPPM_CURRENT_DIRECTORY.$destination);
 
         if (!extension_loaded('zip') || !file_exists($source)) {
             Colors::error("Zip not found");
             return;
         }
 
-        $zip = new ZipArchive();
-        if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+        $zip = new \ZipArchive();
+        if (!$zip->open($destination, \ZIPARCHIVE::CREATE)) {
             Colors::error("Error while opening $destination");
             return;
         }
@@ -671,8 +667,8 @@ class Archive {
         $ignore = [];
 
         foreach ($this->ignore as $ignoreMe) {
-            Colors::info("Ignoring ".getcwd()."/".$ignoreMe);
-            array_push($ignore, getcwd() . "/" . $ignoreMe);
+            Colors::info("Ignoring ".UPPM_CURRENT_DIRECTORY."".$ignoreMe);
+            array_push($ignore, UPPM_CURRENT_DIRECTORY."" . $ignoreMe);
         }
 
 
@@ -685,6 +681,7 @@ class Archive {
                 $filesCount++;
 
             foreach ($files as $file) {
+                $file = UPPM_CURRENT_DIRECTORY.$file;
                 $filesDone++;
                 Tools::statusIndicator($filesDone, $filesCount, 50);
 
@@ -699,7 +696,7 @@ class Archive {
                     if (is_dir($file) === true)
                         $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
                     else if (is_file($file) === true)
-                        $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+                        $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents(UPPM_CURRENT_DIRECTORY.$file));
                 }
             }
             echo "\n";
@@ -737,6 +734,10 @@ class Archive {
 
 ?>
 <?php
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
+
 class Runner {
 
     private $file = null;
@@ -840,6 +841,7 @@ class Runner {
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm\cli;
 
  class Colors {
      public const HEADER = "\033[95m",
@@ -893,6 +895,7 @@ class Runner {
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm\cli;
 
  class CLI {
     public $commands = [];
@@ -954,7 +957,50 @@ class Runner {
 
  ?>
 <?php
+namespace de\interaapps\uppm;
+
+use Phar;
+use Exception;
+use de\interaapps\uppm\Tools;
+use de\interaapps\uppm\cli\CLI;
+use de\interaapps\uppm\Configs;
+use de\interaapps\uppm\cli\Colors;
+
+define('UPPM_CURRENT_DIRECTORY', getcwd()."/");
+
+if (Phar::running() !== "") {
+    spl_autoload_register(function($class) {
+        if(file_exists("../../../../modules/".str_replace("\\","/",$class).".php"))
+            @include_once "../../../../modules/".str_replace("\\","/",$class).".php";
+        // Special stuff
+        else if(file_exists("../../../../src/".str_replace("\\","/",$class).".php"))
+            @include_once   "../../../../src/".str_replace("\\","/",$class).".php";
+    });
+} else
+    require "autoload.php";
+
 ini_set('phar.readonly',0);
+
+$uppmlock = [];
+if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.locks.json"))
+    $uppmlock = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json"));
+
+$uppmconf = (object)[];
+if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.json"))
+    $uppmconf = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.json"));
+
+$serverInfo = @json_decode(@file_get_contents("https://raw.githubusercontent.com/interaapps/uppm-packages/master/uppm.json?".rand(00000, 99999), false, stream_context_create([
+    "http" => [
+        "method" => "GET",
+        "header" => "User-Agent: request"
+    ]
+])));
+
+define("UPPMINFO", [
+    "version"=>"1.2.0",
+    "server"=> (isset($serverInfo->list)) ? $serverInfo->list : false
+]);
+
 $CLI = new CLI(1);
 
 $CLI->register("", function() {
@@ -1000,7 +1046,7 @@ $CLI->register("install", function() {
         Colors::info("Reinstalling packages...");
         $lockFile = Configs::getLockFile();
         $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
-        file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
         foreach ($uppmconf->modules as $name=>$version) {
             $resource = new Install($name, $version);
             $resource->download();
@@ -1172,13 +1218,13 @@ $CLI->register("info", function(){
 });
 
 $CLI->register("lock", function(){
-    if (file_exists("uppm.locks.json"))
-        unlink("uppm.locks.json");
-    foreach (scandir("modules") as $folder){
+    if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.locks.json"))
+        unlink(UPPM_CURRENT_DIRECTORY."uppm.locks.json");
+    foreach (scandir(UPPM_CURRENT_DIRECTORY."modules") as $folder){
         if ($folder != '.' && $folder != '..') {
-            if(file_exists("modules/".$folder."/uppm.json")) {
+            if(file_exists(UPPM_CURRENT_DIRECTORY."modules/".$folder."/uppm.json")) {
                 Colors::info("Writing $folder information (Namespaces, cli-scripts...) into locks.");
-                Tools::lockFile(json_decode(file_get_contents("modules/".$folder."/uppm.json")));
+                Tools::lockFile(json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."modules/".$folder."/uppm.json")));
             }
         }
     }
@@ -1191,6 +1237,6 @@ else
 $lockFile = Configs::getLockFile();
 if (isset($lockFile->packages->{"TEMPNULL-------"})) {
     unset($lockFile->packages->{"TEMPNULL-------"});
-    file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+    file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
 }
 ?>

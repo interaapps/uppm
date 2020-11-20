@@ -6,6 +6,9 @@
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 
  class Init {
 

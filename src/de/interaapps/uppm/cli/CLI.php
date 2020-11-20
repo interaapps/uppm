@@ -6,6 +6,7 @@
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm\cli;
 
  class CLI {
     public $commands = [];

@@ -6,30 +6,35 @@
  *
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use de\interaapps\uppm\cli\Colors;
 
 class Archive {
 
     private $ignore = [];
 
     public function build($source, $destination) : void {
-        if (!file_exists(getcwd()."/uppm_target"))
-            mkdir(getcwd()."/uppm_target");
-        if (!file_exists(getcwd()."/uppm_target/archives"))
-            mkdir(getcwd()."/uppm_target/archives");
+        if (!file_exists(UPPM_CURRENT_DIRECTORY."uppm_target"))
+            mkdir(UPPM_CURRENT_DIRECTORY."uppm_target");
+        if (!file_exists(UPPM_CURRENT_DIRECTORY."uppm_target/archives"))
+            mkdir(UPPM_CURRENT_DIRECTORY."uppm_target/archives");
 
-        $source = getcwd()."/".$source;
+        $source = UPPM_CURRENT_DIRECTORY.$source;
 
-        $destination = getcwd()."/uppm_target/archives/".$destination;
-        if (file_exists($destination))
-            unlink($destination);
+        $destination = UPPM_CURRENT_DIRECTORY."uppm_target/archives/".$destination;
+        if (file_exists(UPPM_CURRENT_DIRECTORY.$destination))
+            unlink(UPPM_CURRENT_DIRECTORY.$destination);
 
         if (!extension_loaded('zip') || !file_exists($source)) {
             Colors::error("Zip not found");
             return;
         }
 
-        $zip = new ZipArchive();
-        if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+        $zip = new \ZipArchive();
+        if (!$zip->open($destination, \ZIPARCHIVE::CREATE)) {
             Colors::error("Error while opening $destination");
             return;
         }
@@ -39,8 +44,8 @@ class Archive {
         $ignore = [];
 
         foreach ($this->ignore as $ignoreMe) {
-            Colors::info("Ignoring ".getcwd()."/".$ignoreMe);
-            array_push($ignore, getcwd() . "/" . $ignoreMe);
+            Colors::info("Ignoring ".UPPM_CURRENT_DIRECTORY."".$ignoreMe);
+            array_push($ignore, UPPM_CURRENT_DIRECTORY."" . $ignoreMe);
         }
 
 
@@ -53,6 +58,7 @@ class Archive {
                 $filesCount++;
 
             foreach ($files as $file) {
+                $file = UPPM_CURRENT_DIRECTORY.$file;
                 $filesDone++;
                 Tools::statusIndicator($filesDone, $filesCount, 50);
 
@@ -67,7 +73,7 @@ class Archive {
                     if (is_dir($file) === true)
                         $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
                     else if (is_file($file) === true)
-                        $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+                        $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents(UPPM_CURRENT_DIRECTORY.$file));
                 }
             }
             echo "\n";

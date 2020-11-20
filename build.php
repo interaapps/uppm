@@ -5,8 +5,6 @@
 $output = '';
 
 $files = [
-    "start.php",
-
     "Tools.php",
     "Init.php",
     "Configs.php",
@@ -17,11 +15,11 @@ $files = [
 
     "cli/Colors.php",
     "cli/CLI.php",
-    "cli/Registers.php"
+    "app.php"
 ];
 
 foreach ($files as $file) {
-    $output .= file_get_contents("src/".$file)."\n";
+    $output .= file_get_contents("src/de/interaapps/uppm/".$file)."\n";
 }
 
 file_put_contents("uppm", $output);

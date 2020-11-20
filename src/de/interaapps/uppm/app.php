@@ -1,5 +1,48 @@
 <?php
+namespace de\interaapps\uppm;
+
+use Phar;
+use Exception;
+use de\interaapps\uppm\Tools;
+use de\interaapps\uppm\cli\CLI;
+use de\interaapps\uppm\Configs;
+use de\interaapps\uppm\cli\Colors;
+
+define('UPPM_CURRENT_DIRECTORY', getcwd()."/");
+
+if (Phar::running() !== "") {
+    spl_autoload_register(function($class) {
+        if(file_exists("../../../../modules/".str_replace("\\","/",$class).".php"))
+            @include_once "../../../../modules/".str_replace("\\","/",$class).".php";
+        // Special stuff
+        else if(file_exists("../../../../src/".str_replace("\\","/",$class).".php"))
+            @include_once   "../../../../src/".str_replace("\\","/",$class).".php";
+    });
+} else
+    require "autoload.php";
+
 ini_set('phar.readonly',0);
+
+$uppmlock = [];
+if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.locks.json"))
+    $uppmlock = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json"));
+
+$uppmconf = (object)[];
+if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.json"))
+    $uppmconf = json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."uppm.json"));
+
+$serverInfo = @json_decode(@file_get_contents("https://raw.githubusercontent.com/interaapps/uppm-packages/master/uppm.json?".rand(00000, 99999), false, stream_context_create([
+    "http" => [
+        "method" => "GET",
+        "header" => "User-Agent: request"
+    ]
+])));
+
+define("UPPMINFO", [
+    "version"=>"1.2.0",
+    "server"=> (isset($serverInfo->list)) ? $serverInfo->list : false
+]);
+
 $CLI = new CLI(1);
 
 $CLI->register("", function() {
@@ -45,7 +88,7 @@ $CLI->register("install", function() {
         Colors::info("Reinstalling packages...");
         $lockFile = Configs::getLockFile();
         $lockFile->packages = ["TEMPNULL-------"=>"TEMPNULL-------"];
-        file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
         foreach ($uppmconf->modules as $name=>$version) {
             $resource = new Install($name, $version);
             $resource->download();
@@ -217,13 +260,13 @@ $CLI->register("info", function(){
 });
 
 $CLI->register("lock", function(){
-    if (file_exists("uppm.locks.json"))
-        unlink("uppm.locks.json");
-    foreach (scandir("modules") as $folder){
+    if (file_exists(UPPM_CURRENT_DIRECTORY."uppm.locks.json"))
+        unlink(UPPM_CURRENT_DIRECTORY."uppm.locks.json");
+    foreach (scandir(UPPM_CURRENT_DIRECTORY."modules") as $folder){
         if ($folder != '.' && $folder != '..') {
-            if(file_exists("modules/".$folder."/uppm.json")) {
+            if(file_exists(UPPM_CURRENT_DIRECTORY."modules/".$folder."/uppm.json")) {
                 Colors::info("Writing $folder information (Namespaces, cli-scripts...) into locks.");
-                Tools::lockFile(json_decode(file_get_contents("modules/".$folder."/uppm.json")));
+                Tools::lockFile(json_decode(file_get_contents(UPPM_CURRENT_DIRECTORY."modules/".$folder."/uppm.json")));
             }
         }
     }
@@ -236,6 +279,6 @@ else
 $lockFile = Configs::getLockFile();
 if (isset($lockFile->packages->{"TEMPNULL-------"})) {
     unset($lockFile->packages->{"TEMPNULL-------"});
-    file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+    file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
 }
 ?>

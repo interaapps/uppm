@@ -6,6 +6,9 @@
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 
 class Build {
 
@@ -26,21 +29,21 @@ class Build {
 
         Colors::info("Building...");
 
-        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile))
-            unlink(getcwd()."/".$this->outputLocation."/".$this->outputFile);
-        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz"))
-            unlink(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz");
+        if (file_exists(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile))
+            unlink(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile);
+        if (file_exists(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile.".gz"))
+            unlink(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile.".gz");
 
-        if (!file_exists($this->outputLocation)) {
+        if (!file_exists(UPPM_CURRENT_DIRECTORY.$this->outputLocation)) {
             Colors::info("Creating dir: ".$this->outputLocation);
-            mkdir($this->outputLocation);
+            mkdir(UPPM_CURRENT_DIRECTORY.$this->outputLocation);
         }
 
         Colors::info("Initializing PHP-Phar");
-        $phar = new Phar(getcwd()."/".$this->outputLocation."/".$this->outputFile);
+        $phar = new \Phar(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile);
 
         Colors::info("BuildFromDirectory: ".$this->directory);
-        $phar->buildFromDirectory(getcwd()."/".$this->directory, '/^(?!(.*uppm_target))'.(function(){
+        $phar->buildFromDirectory(UPPM_CURRENT_DIRECTORY."".$this->directory, '/^(?!(.*uppm_target))'.(function(){
             $out = "";
             foreach ($this->ignoredDirectories as $directory)
                 $out .= '(?!(.*'.str_replace("/","\\/",$directory).'))';
@@ -55,20 +58,20 @@ class Build {
             Colors::warning("main haven't been found in uppm.json (\"build\": {\"main\": NULL (NOT FOUND)})");
 
 
-        if (file_exists(getcwd()."/".$this->outputLocation."/".$this->outputFile.".gz")) {
+        if (file_exists(UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile.".gz")) {
             Colors::info("Removing old ".$this->outputFile.".gz");
-            unlink(getcwd() . "/" . $this->outputLocation . "/" . $this->outputFile . ".gz");
+            unlink(UPPM_CURRENT_DIRECTORY . $this->outputLocation . "/" . $this->outputFile . ".gz");
         }
 
         Colors::info("Compressing...");
-        $phar->compress(Phar::GZ);
-        Colors::done("Built into the file ".getcwd()."/".$this->outputLocation."/".$this->outputFile);
+        $phar->compress(\Phar::GZ);
+        Colors::done("Built into the file ".UPPM_CURRENT_DIRECTORY."".$this->outputLocation."/".$this->outputFile);
 
         foreach ($this->ignoredFiles as $file) {
             try {
                 Colors::info("Removing file in Phar: ".$file);
                 $phar->delete($file);
-            } catch (BadMethodCallException $e) {}
+            } catch (\BadMethodCallException $e) {}
         }
         Colors::done("Done!");
 

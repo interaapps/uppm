@@ -1,6 +1,6 @@
 {
     "name": "uppm",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "description": "UPPM Is a PHP Package Manager with many useful tools!",
     "author": "InteraApps",
     "organization": "InteraApps",
@@ -24,15 +24,18 @@
     },
     "initscripts": [],
     "build": {
-        "main": "uppm",
+        "main": "src\/de\/interaapps\/uppm\/app.php",
         "ignored_directories": [
             ".idea",
             ".git",
             "tests",
-            "modules"
+            "modules",
+            "uppm_target"
         ],
         "ignored_files": [
-            ".gitignore"
+            ".gitignore",
+            "uppm.json",
+            "uppm.locks.json"
         ]
     },
     "archive": {

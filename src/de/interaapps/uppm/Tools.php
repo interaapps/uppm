@@ -6,6 +6,9 @@
  * 
  * @author InteraApps
  */
+namespace de\interaapps\uppm;
+
+use de\interaapps\uppm\cli\Colors;
 
  class Tools {
 
@@ -87,14 +90,14 @@
      }
 
      public static function downloadAutoloader(){
-         if (file_exists("autoload.php")) {
+         if (file_exists(UPPM_CURRENT_DIRECTORY."autoload.php")) {
              Colors::info("The file: 'autoload.php' already exists. Do you want to override it? [YES,No]");
              if (!(readline() == "" || strtoupper(readline()) == "YES"))
                 return;
 
          }
 
-         file_put_contents("autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
+         file_put_contents(UPPM_CURRENT_DIRECTORY."autoload.php", file_get_contents("https://raw.githubusercontent.com/interaapps/uppm/master/autoload.php"));
      }
 
      public static function lockFile($uppmJson){
@@ -140,7 +143,7 @@
             }
         }
         
-        file_put_contents("uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
+        file_put_contents(UPPM_CURRENT_DIRECTORY."uppm.locks.json", json_encode($lockFile, JSON_PRETTY_PRINT));
      }
 
  }
