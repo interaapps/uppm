@@ -105,16 +105,16 @@ use de\interaapps\uppm\cli\Colors;
                 if (isset($tempuppmconf->directory)){
                     $enddir = $tempuppmconf->directory;
                 } elseif (isset($tempuppmconf->name)){
-                    $enddir = "modules/".$tempuppmconf->name;
+                    $enddir = UPPM_CURRENT_DIRECTORY."modules/".$tempuppmconf->name;
                 }
                 
                 // Deleting existing modules/{package} folder
-                if (is_dir($enddir) && $enddir!="./" ){
-                    Tools::deleteDir($enddir);
+                if (is_dir(UPPM_CURRENT_DIRECTORY.$enddir) && $enddir!="./" ){
+                    Tools::deleteDir(UPPM_CURRENT_DIRECTORY.$enddir);
                 }
 
-                if (!is_dir("modules"))
-                    mkdir("modules");
+                if (!is_dir(UPPM_CURRENT_DIRECTORY."modules"))
+                    mkdir(UPPM_CURRENT_DIRECTORY."modules");
 
                 $copy = false;
 
@@ -170,7 +170,7 @@ use de\interaapps\uppm\cli\Colors;
 
                 Tools::deleteDir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
                 // rmdir(UPPM_CURRENT_DIRECTORY."UPPMtempdir");
-                unlink("UPPMtemp_module.zip");
+                unlink(UPPM_CURRENT_DIRECTORY."UPPMtemp_module.zip");
 
                 if ($output) Tools::statusIndicator(80, 100);
 
