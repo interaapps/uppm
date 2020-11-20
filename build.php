@@ -2,7 +2,8 @@
 /**
  *
  */
-$output = '';
+$output = '#!/usr/bin/env php
+';
 
 $files = [
     "Tools.php",
