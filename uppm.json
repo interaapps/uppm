@@ -23,6 +23,9 @@
     "modules": {
     },
     "initscripts": [],
+    "namespace_bindings": {
+    	"de\\interaapps\\uppm": "src/de/interaapps/uppm"
+    },
     "build": {
         "main": "src\/de\/interaapps\/uppm\/app.php",
         "ignored_directories": [
