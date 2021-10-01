@@ -12,8 +12,8 @@
         "run": "start",
         "outputName": "uppm",
         "ignored": [
-            "test.txt",
-            ".git"
+            "test.txt", ".git",
+            ".idea", "README.md"
         ]
     },
     "modules": {
