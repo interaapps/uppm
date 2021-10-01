@@ -1,6 +1,4 @@
-/UPPMtempdir
 /.idea
 /tests
 /modules
-/uppm_target
-UPPMtemp_module.zip
+.fuse_*

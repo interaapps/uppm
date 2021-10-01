@@ -1,134 +1,94 @@
-<p align="center"><img src="https://cdn.interaapps.de/ulole/icons/ulole1.svg" width="200"><br>Ulole-PHP-Package-Manager</p>
+<p align="center"><img src="./src/resources/ulole.svg" width="200"><br>Ulole-PHP-Package-Manager</p>
 
 
-# UlolePHPPackageManager (UPPM) [Testversion 1]
+```shell
+# Creating an boilerplate app
+$ uppm create testapp
+INFO: Creating in test123
+$ cd testapp
 
-### Downloading
-Execute this command in your project directory
-```bash
-wget https://raw.githubusercontent.com/interaapps/uppm/master/uppm
-``` 
+# Start your app
+$ uppm run start
+Hello World!
 
-#### Install globally on linux
-```bash
-sudo wget https://raw.githubusercontent.com/interaapps/uppm/master/uppm
+# Installing modules
+$ uppm install uloleorm
+# Or from github
+$ uppm install interaapps/ulole-orm+master@github
+# Or more...
+
+# Building your app (Useful for CLI-Apps or non-web-hosted stuff)
+$ uppm build
+INFO: Creating phar...
+[...]
+$ cd target
+$ ./testapp-1.0.phar
+Hello World
+
+# Serve (Useful if you are developing a Web-App)
+uppm serve
+```
+
+## For a single project
+```shell
+wget -O uppm.phar https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar
+php uppm.phar help
+```
+## Globally
+```shell
+wget -O uppm https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar
+# Installing it on linux globally
 sudo mv uppm /usr/local/bin/uppm
-sudo chmod 777 /usr/local/bin/uppm
-```
-Or
-`php uppm linuxglobal` (Also useful for updating)
-
-`IMPORTANT!` Requirements:
-- php7.3
-- php7.3-zip (Install: sudo apt install php7.3-zip)
-- php7.3-json (sudo apt install php7.3-json)
-- phar enabled in the php.ini. Example path: `/etc/php/7.3/cli/php.ini` set `;phar.readonly = On` (num: 1060) to `phar.readonly = Off`!
-
-### Init
-```bash
-php uppm init
-```
-`INFO` IF YOU HAVE INSTALLED UPPM GLOBALLY YOU WONT NEED php before uppm. Example: uppm init`
-### Package managment
-#### Official package
-```bash
-php uppm install mypackage
-``` 
-#### Github
-```bash
-php uppm install github:user/mypackage
-``` 
-#### Github (Branch)
-```bash
-php uppm install github:user/mypackage+master
-``` 
-
-#### Web
-```bash
-php uppm install web:https://user.com/mypackage.zip
-``` 
-
-### Building into phar
-```bash
-php uppm build
-``` 
-
-##### Config (uppm.json)
-```json
-{
-    "name": "uppm",
-    "version": "1.0",
-    ...
-
-    "build": {
-        "main": "main.php",
-        "output" (optional): "test.phar",
-        "src" (optional): "src",
-        "ignored_directories" (optional): [
-            ".idea"
-        ],
-        "ignored_files" (optional): [
-            "testfile.php"
-        ]
-    }
-}
+sudo chmod +x /usr/local/bin/uppm
+uppm help
 ```
 
-### Custom repositories
-It's just a file on a webserver! A json file!
-#### Example list.json
-```json
-{    
-    "julianfun123/uloleorm": {
-        "newest": "1.0",
-        "1.0": "https://example.com/repos/1.0.zip"
-    }
-}
+### Requirements
+- php8.0
+- php8.0-zip
+- php8.0-json
+- php8.0-phar (And enabled in php.ini, `/etc/php/8.0/cli/php.ini`, `phar.readonly = Off`)
+```shell
+sudo apt install php8.0 php8.0-zip php8.0-json php8.0-phar
 ```
 
-#### Repository in uppm.json
-```json
-{
-    "name": "uppm",
-    ...
-    "repositories": {
-        "example": "https://example.com/list.json"
-    },
-    "modules": {
-        ...
-        "julianfun123/uloleorm": "1.0"
-    }
-}
-```
-
-`Tip: ` If you want to have a private repo you can simply check the http request with a `GET` parameter: https://example.com/list.json?private_key=KEY
-
-### Test Server
-#### Starting
-```bash
-php uppm serve
-```
-
-#### Configurating
-`INFO` Every option is optionial!
-
-
-| Option          | Default               |
-| --------------- |---------------------- |
-| directory       | ./ (project directory) |
-| routerfile      | none                  |
-| host            | 0.0.0.0 (localhost)   |
-| port            | 8000                  |
+### uppm.json
 
 ```json
 {
-    "name": "uppm",
-    ...
-    "serve": {
-        "directory": "public", 
-        "routerFile": "index.php",
-        "host": "0.0.0.0",
-        "port": 8000 
-    }
+  "name": "uppm",
+  "version": "1.0",
+  "phpVersion": ">8.0",
+  "repositories": [],
+  "run": {
+    "start": "src\/main\/bootstrap.php",
+    "install": "src/scripts/install.php"
+  },
+  "build": {
+    "type": "phar",
+    "run": "start",
+    "outputName": "uppm",
+    "ignored": [
+      "test.txt",
+      ".git"
+    ]
+  },
+  "modules": {
+  },
+  "namespaceBindings": {
+    "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm"
+  }
 }
+```
+
+### autoload
+
+```shell
+# adds a autoload.php file
+uppm autoload
+```
+
+```php
+<?php
+(include 'autoload.php')();
 ```
