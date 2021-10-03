@@ -44,9 +44,9 @@ jobs:
 
     - name: Creating Project and testing it
       run: |
+        chmod +x ./target/uppm.phar
         ./target/uppm.phar create test
         cd test
-        chmod +x ../target/uppm.phar
         ../target/uppm.phar install deverm
         ../target/uppm.phar install interaapps/ulole-orm+master@github
         ../target/uppm.phar install
