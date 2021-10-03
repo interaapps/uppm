@@ -15,7 +15,9 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Install dependencies
-      run: php8.0 src/main/bootstrap.php install
+      run: |
+        echo "\nphar.readonly = Off" >> /etc/php/8.0/cli/php.ini
+        php8.0 src/main/bootstrap.php install
 
     - name: Building
       run: php8.0 src/main/bootstrap.php build
@@ -23,8 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@v2
+    
     - name: Building UPPM
       run: |
+        echo "\nphar.readonly = Off" >> /etc/php/8.0/cli/php.ini
         php8.0 src/main/bootstrap.php install
         php8.0 src/main/bootstrap.php build
       
