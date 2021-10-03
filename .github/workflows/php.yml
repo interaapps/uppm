@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-
+    name: Build uppm.phar
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +24,7 @@ jobs:
         sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
         php8.0 src/main/bootstrap.php build
   test:
+    name: Tests
     runs-on: ubuntu-latest
     
     steps:
