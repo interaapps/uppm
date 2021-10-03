@@ -35,6 +35,7 @@ jobs:
         sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
         php8.0 src/main/bootstrap.php install
         php8.0 src/main/bootstrap.php build
+        chmod +x ./target/uppm.phar
       
     - name: Install packages
       run: ./target/uppm.phar install
@@ -44,7 +45,6 @@ jobs:
 
     - name: Creating Project and testing it
       run: |
-        chmod +x ./target/uppm.phar
         ./target/uppm.phar create test
         cd test
         ../target/uppm.phar install deverm
