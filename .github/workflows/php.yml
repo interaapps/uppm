@@ -23,6 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Building UPPM
+      run: |
+        php8.0 src/main/bootstrap.php install
+        php8.0 src/main/bootstrap.php build
+      
     - name: Install packages
       run: ./target/uppm.phar install
     
