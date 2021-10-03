@@ -12,12 +12,14 @@ class CreateCommand implements Command {
 
     public function execute(array $args) {
         if (count($args) > 0) {
-            $dirName = getcwd()."/".$args[0];
+            $dirName = $args[0];
             $this->uppm->getLogger()->info("Creating in $dirName");
-            mkdir($dirName);
             $config = new Configuration();
             $config->name = $dirName;
             $config->version = "1.0";
+
+            $dirName = getcwd()."/".$dirName;
+            mkdir($dirName);
             mkdir("$dirName/src");
             mkdir("$dirName/src/main");
             mkdir("$dirName/src/main/com");
