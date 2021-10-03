@@ -52,7 +52,9 @@ jobs:
         ../target/uppm.phar install
         ../target/uppm.phar lock
         ../target/uppm.phar run start
+        echo \n
         sudo chmod 777 /etc/php/8.0/cli/php.ini
         sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
         ../target/uppm.phar build
+        chmod +x target/test-1.0.phar
         ./target/test-1.0.phar
