@@ -16,6 +16,7 @@ jobs:
     
     - name: Install dependencies
       run: |
+        chmod 777 /etc/php/8.0/cli/php.ini
         echo "\nphar.readonly = Off" >> /etc/php/8.0/cli/php.ini
         php8.0 src/main/bootstrap.php install
 
@@ -29,6 +30,7 @@ jobs:
     
     - name: Building UPPM
       run: |
+        chmod 777 /etc/php/8.0/cli/php.ini
         echo "\nphar.readonly = Off" >> /etc/php/8.0/cli/php.ini
         php8.0 src/main/bootstrap.php install
         php8.0 src/main/bootstrap.php build
