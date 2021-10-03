@@ -1,4 +1,4 @@
-name: PHP Composer
+name: UPPM builds and tests
 
 on:
   push:
