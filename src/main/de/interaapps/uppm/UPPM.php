@@ -36,6 +36,8 @@ class UPPM {
             "init" => new InitCommand($this),
             "lock" => new LockCommand($this)
         ];
+        $this->commands["i"] = $this->commands["install"];
+        $this->commands["r"] = $this->commands["run"];
 
         $config = new Configuration();
         $lockFile = new LockFile();

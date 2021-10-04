@@ -20,7 +20,8 @@
     },
     "serve": {},
     "modules": {
-        "uloleorm": "2.0.1"
+        "uloleorm": "2.0.1",
+        "interaapps\/jsonplus": "1.0-pre"
     },
     "namespaceBindings": {
         "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm"

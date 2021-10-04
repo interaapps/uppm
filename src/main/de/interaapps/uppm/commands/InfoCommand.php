@@ -1,6 +1,7 @@
 <?php
 namespace de\interaapps\uppm\commands;
 
+use de\interaapps\jsonplus\JSONPlus;
 use de\interaapps\uppm\UPPM;
 
 class InfoCommand implements Command {
@@ -9,5 +10,6 @@ class InfoCommand implements Command {
 
     public function execute(array $args) {
         var_dump($this->uppm->getCurrentProject()->getConfig());
+        var_dump($this->uppm->getCurrentProject()->getLockFile());
     }
 }
