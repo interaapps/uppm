@@ -5,18 +5,22 @@
     "repositories": [],
     "run": {
         "start": "src\/main\/bootstrap.php",
-        "install": "src/scripts/install.php"
+        "install": "src\/scripts\/install.php"
     },
     "build": {
         "type": "phar",
         "run": "start",
         "outputName": "uppm",
         "ignored": [
-            "test.txt", ".git",
-            ".idea", "README.md"
+            "test.txt",
+            ".git",
+            ".idea",
+            "README.md"
         ]
     },
+    "serve": {},
     "modules": {
+        "uloleorm": "2.0.1"
     },
     "namespaceBindings": {
         "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm"

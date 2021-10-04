@@ -36,7 +36,7 @@ abstract class Package {
             mkdir(getcwd()."/modules/");
 
         $this->uppm->getLogger()->info("OUTPUT DIR ./modules/".$this->name);
-        $cname = (str_contains($this->getName(), "/") ? explode("/", $this->getName())[1] : $this->getName());
+        $cname = str_replace("/", "-", $this->getName());
 
 
         $zipOutDir = $tmpName;
@@ -56,7 +56,7 @@ abstract class Package {
             $this->uppm->getLogger()->info("Adding to lock-file");
             $conf = Configuration::fromJson(file_get_contents($zipOutDir."/uppm.json"));
             if (isset($conf->name) && $conf->name != "")
-                $outputDir = "modules/".$conf->name;
+                $outputDir = "modules/".str_replace("/", "-", $conf->name);
 
             if (file_exists(getcwd()."/".$outputDir))
                 Files::deleteDir(getcwd()."/".$outputDir);

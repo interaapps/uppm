@@ -49,7 +49,11 @@ uppm help
 - php8.0-json
 - php8.0-phar (And enabled in php.ini, `/etc/php/8.0/cli/php.ini`, `phar.readonly = Off`)
 ```shell
+# Installing dependencies
 sudo apt install php8.0 php8.0-zip php8.0-json php8.0-phar
+
+# Adding phar rule to php.ini (For building projects)
+sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
 ```
 
 ### uppm.json
