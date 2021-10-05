@@ -9,6 +9,7 @@ use de\interaapps\uppm\commands\InfoCommand;
 use de\interaapps\uppm\commands\InitCommand;
 use de\interaapps\uppm\commands\InstallCommand;
 use de\interaapps\uppm\commands\LockCommand;
+use de\interaapps\uppm\commands\ReplCommand;
 use de\interaapps\uppm\commands\RunCommand;
 use de\interaapps\uppm\commands\ServeCommand;
 use de\interaapps\uppm\config\Configuration;
@@ -34,7 +35,8 @@ class UPPM {
             "info" => new InfoCommand($this),
             "help" => new HelpCommand($this),
             "init" => new InitCommand($this),
-            "lock" => new LockCommand($this)
+            "lock" => new LockCommand($this),
+            "repl" => new ReplCommand($this)
         ];
         $this->commands["i"] = $this->commands["install"];
         $this->commands["r"] = $this->commands["run"];

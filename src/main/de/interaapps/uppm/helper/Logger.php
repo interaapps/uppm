@@ -11,7 +11,9 @@ class Logger {
         BOLD = "\033[1m",
         UNDERLINE = "\033[4m",
         RED = "\033[31m",
+        GRAY = "\033[90m",
         BLUE = "\033[34m",
+        LIGHT_BLUE = "\033[94m",
         YELLOW = "\033[33m",
         TURQUIOUS = "\033[36m",
         GREEN = "\033[32m",
@@ -27,33 +29,36 @@ class Logger {
         PREFIX_INFO = "\033[36m INFO\033[0m: ",
         PREFIX_ERROR = "\033[91m ERROR\033[0m: ";
 
-    private $echoCallable;
-
-    public function __construct($echoCallable){
-        $this->echoCallable = $echoCallable;
+    public function __construct(
+        private $echoCallable,
+        private $errCallable
+    ){
     }
 
-    public function log($l){
+    public function  log($l) : void {
         if (!is_string($l))
             $l = json_encode($l);
         ($this->echoCallable)($l.self::ENDC."\n");
     }
 
-    public function err($e){
-        error_log(self::RED."ERROR: ".self::ENDC.$e."\n");
+    public function err($e) : void {
+        ($this->errCallable)(self::RED."ERROR: ".self::ENDC.$e."\n");
     }
 
-    public function warn($e){
+    public function warn($e) : void {
         $this->log(self::WARNING."WARN: ".self::ENDC.$e);
     }
 
-    public function info($e){
+    public function info($e) : void {
         $this->log(self::TURQUIOUS."INFO: ".self::ENDC.$e);
     }
 
     public static function createEchoLogger() : Logger {
         return new Logger(function($s){
             echo $s;
+        },
+        function($s){
+            error_log($s);
         });
     }
 }

@@ -1,7 +1,6 @@
 <?php
 namespace de\interaapps\uppm\commands;
 
-use de\interaapps\jsonplus\JSONPlus;
 use de\interaapps\uppm\UPPM;
 
 class InfoCommand implements Command {
