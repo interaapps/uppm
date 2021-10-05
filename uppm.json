@@ -3,8 +3,6 @@
     "version": "1.0",
     "phpVersion": ">8.0",
     "repositories": [
-        "http:\/\/localhost:8000",
-        "http:\/\/localhost:8000"
     ],
     "run": {
         "start": "src\/main\/bootstrap.php",

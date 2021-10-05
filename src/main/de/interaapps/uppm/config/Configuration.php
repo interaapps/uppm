@@ -36,7 +36,7 @@ class Configuration {
     }
 
     public function save() : void {
-        if (($key = array_search("https://raw.githubusercontent.com/interaapps/uppm-packages/master/list.json", $this->repositories)) !== false)
+        if (($key = array_search("https://central.uppm.interaapps.de", $this->repositories)) !== false)
             unset($this->repositories[$key]);
         file_put_contents(getcwd()."/uppm.json", $this->json());
     }

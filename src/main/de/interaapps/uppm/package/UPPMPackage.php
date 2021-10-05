@@ -17,7 +17,7 @@ class UPPMPackage extends Package {
             $versionName = $this->version == "latest" ? "@latest" : $this->version;
 
             $version = PackageVersionResponse::fromJson(Web::httpRequest("$repo/$name/$versionName"));
-            if ($version->error)
+            if ($version->error || $version->download_url == null)
                 continue;
             return $version->download_url;
         }

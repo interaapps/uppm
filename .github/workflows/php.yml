@@ -16,8 +16,9 @@ jobs:
     
     - name: Install dependencies
       run: |
-        php8.0 src/main/bootstrap.php install
-        php8.0 src/main/bootstrap.php lock
+        wget -O uppm.phar https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar
+        php8.0 uppm.phar install
+        php8.0 uppm.phar lock
 
     - name: Building
       run: |
@@ -35,7 +36,7 @@ jobs:
       run: |
         sudo chmod 777 /etc/php/8.0/cli/php.ini
         sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
-        php8.0 src/main/bootstrap.php install
+        php8.0 uppm.phar install
         php8.0 src/main/bootstrap.php build
         chmod +x ./target/uppm.phar
       
