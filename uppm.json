@@ -20,7 +20,7 @@
     },
     "serve": {},
     "modules": {
-        "interaapps\/jsonplus": "1.0-pre"
+        "interaapps\/jsonplus": "1.0.0"
     },
     "namespaceBindings": {
         "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm"

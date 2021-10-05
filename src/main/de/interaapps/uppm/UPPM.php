@@ -45,8 +45,8 @@ class UPPM {
         $lockFile = new LockFile();
         if (file_exists(getcwd()."/uppm.json")) {
             $config = Configuration::fromJson(file_get_contents(getcwd()."/uppm.json"));
-            array_push($config->repositories, "https://raw.githubusercontent.com/interaapps/uppm-packages/master/list.json");
         }
+        array_push($config->repositories, "https://raw.githubusercontent.com/interaapps/uppm-packages/master/list.json");
         if (file_exists(getcwd()."/uppm.locks.json")) {
             $lockFile = LockFile::fromJson(file_get_contents(getcwd()."/uppm.locks.json"));
         }
