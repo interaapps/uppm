@@ -17,6 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         php8.0 src/main/bootstrap.php install
+        php8.0 src/main/bootstrap.php lock
 
     - name: Building
       run: |
