@@ -23,6 +23,7 @@
         "interaapps\/jsonplus": "latest"
     },
     "namespaceBindings": {
-        "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm"
+        "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm",
+        "de\\interaapps\\jsonplus": "modules\/interaapps-jsonplus\/src\/main\/de\/interaapps\/jsonplus"
     }
 }

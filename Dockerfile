@@ -29,8 +29,8 @@ RUN \
     php8-xmlwriter php8-xsl php8-zip;\
     ln /usr/bin/php8 /usr/bin/php; \
     echo phar.readonly = Off >> /etc/php8/php.ini; \
+    php target/uppm.phar lock; \
     php target/uppm.phar install; \
-    php src/main/bootstrap.php lock; \
     php src/main/bootstrap.php build; \
     mv target/uppm.phar /usr/local/bin/uppm; \
     chmod +x /usr/local/bin/uppm;
