@@ -39,7 +39,6 @@ abstract class Package {
         if (!file_exists(getcwd()."/modules/"))
             mkdir(getcwd()."/modules/");
 
-        $this->uppm->getLogger()->info("OUTPUT DIR ./modules/".$this->name);
         $cname = str_replace("/", "-", $this->getName());
 
 
@@ -61,6 +60,8 @@ abstract class Package {
             $conf = Configuration::fromJson(file_get_contents($zipOutDir."/uppm.json"));
             if (isset($conf->name) && $conf->name != "")
                 $outputDir = "modules/".str_replace("/", "-", $conf->name);
+
+            $this->uppm->getLogger()->info("OUTPUT DIR ./modules/".$outputDir);
 
             if (file_exists(getcwd()."/".$outputDir))
                 Files::deleteDir(getcwd()."/".$outputDir);

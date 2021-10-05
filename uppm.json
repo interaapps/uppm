@@ -1,9 +1,8 @@
 {
     "name": "uppm",
-    "version": "1.0",
+    "version": "2.0.1",
     "phpVersion": ">8.0",
-    "repositories": [
-    ],
+    "repositories": [],
     "run": {
         "start": "src\/main\/bootstrap.php",
         "install": "src\/scripts\/install.php"
@@ -21,7 +20,7 @@
     },
     "serve": {},
     "modules": {
-        "interaapps\/jsonplus": "312"
+        "interaapps\/jsonplus": "latest"
     },
     "namespaceBindings": {
         "de\\interaapps\\uppm": "src\/main\/de\/interaapps\/uppm"

@@ -11,6 +11,6 @@ class PackageVersionResponse {
     public int $id;
     public int $package_id;
     public string $name;
-    public string|null $download_url = null;
+    public string $download_url = "";
     public string $created_at;
 }
