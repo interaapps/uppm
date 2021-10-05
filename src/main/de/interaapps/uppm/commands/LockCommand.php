@@ -12,7 +12,7 @@ class LockCommand implements Command {
         $this->uppm->getCurrentProject()->getConfig()->lock($this->uppm->getCurrentProject()->getLockFile(), ".");
 
         foreach (scandir("modules") as $module) {
-            if ($module != "." && $module != "..") {
+            if ($module != "." && $module != ".." && is_dir($module)) {
                 $file = getcwd()."/modules/$module/uppm.json";
                 if (file_exists($file)){
                     $mod = Configuration::fromJson(file_get_contents($file));

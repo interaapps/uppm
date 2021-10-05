@@ -1,5 +1,7 @@
 <?php
 return function ($dir = ".", $mod = "main") {
+    if (Phar::running())
+        $dir = __DIR__."/".$dir;
     $uppmlock = (object) [];
     if (file_exists("uppm.locks.json")) {
         $uppmlock = json_decode(file_get_contents($dir . "/" . "uppm.locks.json"));
