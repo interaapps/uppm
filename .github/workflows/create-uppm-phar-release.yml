@@ -24,8 +24,7 @@ jobs:
         run: |
           sudo chmod 777 /etc/php/8.0/cli/php.ini
           sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
-          wget -O uppm.phar https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar
-          php8.0 uppm.phar install
+          php8.0 target/uppm.phar install
           php8.0 src/main/bootstrap.php lock
           php8.0 src/main/bootstrap.php build
           chmod +x ./target/uppm.phar

@@ -29,8 +29,7 @@ RUN \
     php8-xmlwriter php8-xsl php8-zip;\
     ln /usr/bin/php8 /usr/bin/php; \
     echo phar.readonly = Off >> /etc/php8/php.ini; \
-    wget -O uppm.phar https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar \
-    php uppm.phar install; \
+    php target/uppm.phar install; \
     php src/main/bootstrap.php lock; \
     php src/main/bootstrap.php build; \
     mv target/uppm.phar /usr/local/bin/uppm; \
