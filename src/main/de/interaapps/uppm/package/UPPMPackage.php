@@ -1,21 +1,26 @@
 <?php
 namespace de\interaapps\uppm\package;
 
+use de\interaapps\jsonplus\JSONPlus;
+use de\interaapps\uppm\helper\Logger;
 use de\interaapps\uppm\helper\Web;
+use de\interaapps\uppm\package\uppm\models\PackageVersionResponse;
 
 class UPPMPackage extends Package {
 
     public function getDownloadURL() : string|null {
-        $list = [];
-
         foreach ($this->uppm->getCurrentProject()->getConfig()->repositories as $repo) {
-            $list = array_merge($list, (array) json_decode(Web::httpRequest($repo."?name=$this->name&version=$this->version")));
+            $name = $this->getName();
+            if (!str_contains($name, "/"))
+                $name = "_/$name";
+
+            $versionName = $this->version == "latest" ? "@latest" : $this->version;
+
+            $version = PackageVersionResponse::fromJson(Web::httpRequest("$repo/$name/$versionName"));
+            if ($version->error)
+                continue;
+            return $version->download_url;
         }
-        $list = json_decode(json_encode($list));
-
-        if ($this->version == "latest")
-            $this->version = $list?->{$this->getName()}?->newest;
-
-        return $list?->{$this->getName()}?->{$this->getVersion()};
+        return null;
     }
 }

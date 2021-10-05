@@ -4,6 +4,7 @@ namespace de\interaapps\uppm;
 use de\interaapps\uppm\commands\AddAutoloadCommand;
 use de\interaapps\uppm\commands\BuildCommand;
 use de\interaapps\uppm\commands\CreateCommand;
+use de\interaapps\uppm\commands\GHCCommand;
 use de\interaapps\uppm\commands\HelpCommand;
 use de\interaapps\uppm\commands\InfoCommand;
 use de\interaapps\uppm\commands\InitCommand;
@@ -36,7 +37,9 @@ class UPPM {
             "help" => new HelpCommand($this),
             "init" => new InitCommand($this),
             "lock" => new LockCommand($this),
-            "repl" => new ReplCommand($this)
+            "repl" => new ReplCommand($this),
+
+            "ghc" => new GHCCommand($this)
         ];
         $this->commands["i"] = $this->commands["install"];
         $this->commands["r"] = $this->commands["run"];
@@ -46,7 +49,7 @@ class UPPM {
         if (file_exists(getcwd()."/uppm.json")) {
             $config = Configuration::fromJson(file_get_contents(getcwd()."/uppm.json"));
         }
-        array_push($config->repositories, "https://raw.githubusercontent.com/interaapps/uppm-packages/master/list.json");
+        array_push($config->repositories, "https://central.uppm.interaapps.de");
         if (file_exists(getcwd()."/uppm.locks.json")) {
             $lockFile = LockFile::fromJson(file_get_contents(getcwd()."/uppm.locks.json"));
         }

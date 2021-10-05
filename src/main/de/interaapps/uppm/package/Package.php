@@ -19,9 +19,13 @@ abstract class Package {
     ) {
     }
 
-    public function download() : void {
+    public function download() : bool {
         $tmpName = sys_get_temp_dir()."/"."ULOLE-".rand(111111111111, 99999999999);
         $downloadUrl = $this->getDownloadURL();
+        if ($downloadUrl == null) {
+            $this->uppm->getLogger()->err("Can't found package $this->name:$this->version");
+            return false;
+        }
         $this->uppm->getLogger()->info("Downloading from $downloadUrl");
         file_put_contents($tmpName.".zip", Web::httpRequest($downloadUrl));
         $zip = new ZipArchive;
@@ -73,6 +77,7 @@ abstract class Package {
         }
         Files::copyDir($zipOutDir, getcwd()."/".$outputDir);
         Files::deleteDir($tmpName);
+        return true;
     }
 
     public function remove(){
