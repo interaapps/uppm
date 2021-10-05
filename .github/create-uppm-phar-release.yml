@@ -1,0 +1,40 @@
+name: create uppm.phar for release
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build release binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Building UPPM
+        run: |
+          sudo chmod 777 /etc/php/8.0/cli/php.ini
+          sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
+          php8.0 src/main/bootstrap.php install
+          php8.0 src/main/bootstrap.php lock
+          php8.0 src/main/bootstrap.php build
+          chmod +x ./target/uppm.phar
+
+      - name: Upload release binary
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./target/uppm.phar
+          asset_name: uppm.phar
+          asset_content_type: application/octet-stream
