@@ -47,7 +47,7 @@ class Configuration {
     public function lock(LockFile $lockFile, $folderPrefix="") : void {
         if (isset($this->namespace_bindings)) {
             foreach ($this->namespace_bindings as $name => $v) {
-                $this->namespaceBindings[$name] = $v;
+                $this->namespaceBindings->{$name} = $v;
             }
         }
 
