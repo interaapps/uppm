@@ -5,7 +5,8 @@
     "repositories": [],
     "run": {
         "start": "src\/main\/bootstrap.php",
-        "install": "src\/scripts\/install.php"
+        "install": "src\/scripts\/install.php",
+        "test": "src\/scripts\/testing.php"
     },
     "build": {
         "type": "phar",

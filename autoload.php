@@ -26,8 +26,8 @@ return function ($dir = ".", $mod = "main") {
             @include_once "$dir/".str_replace("\\","/",$class).".php";
         else if(file_exists("$dir/modules/".str_replace("\\","/",$class).".php"))
             @include_once "$dir/modules/".str_replace("\\","/",$class).".php";
-        else if(file_exists("$dir/src/main/".str_replace("\\","/",$class).".php"))
-            @include_once "$dir/src/main/".str_replace("\\","/",$class).".php";
+        else if(file_exists("$dir/src/$mod/".str_replace("\\","/",$class).".php"))
+            @include_once "$dir/src/$mod/".str_replace("\\","/",$class).".php";
         else if(file_exists("$dir/src/".str_replace("\\","/",$class).".php"))
             @include_once "$dir/src/".str_replace("\\","/",$class).".php";
         else if(isset($namespaceBindingsKeys)) {

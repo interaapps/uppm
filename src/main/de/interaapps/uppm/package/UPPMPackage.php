@@ -1,8 +1,6 @@
 <?php
 namespace de\interaapps\uppm\package;
 
-use de\interaapps\jsonplus\JSONPlus;
-use de\interaapps\uppm\helper\Logger;
 use de\interaapps\uppm\helper\Web;
 use de\interaapps\uppm\package\uppm\models\PackageVersionResponse;
 
@@ -19,6 +17,7 @@ class UPPMPackage extends Package {
             $version = PackageVersionResponse::fromJson(Web::httpRequest("$repo/$name/$versionName"));
             if ($version->error || $version->download_url == "")
                 continue;
+            $this->version = $version->name;
             return $version->download_url;
         }
         return null;
