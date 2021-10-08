@@ -52,6 +52,7 @@ jobs:
         cd test
         ../target/uppm.phar install deverm
         ../target/uppm.phar install interaapps/ulole-orm+master@github
+        ../target/uppm.phar install guzzlehttp/guzzle@composer
         ../target/uppm.phar install
         ../target/uppm.phar lock
         ../target/uppm.phar run start

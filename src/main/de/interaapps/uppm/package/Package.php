@@ -2,6 +2,7 @@
 namespace de\interaapps\uppm\package;
 
 use de\interaapps\uppm\config\Configuration;
+use de\interaapps\uppm\config\LockFile;
 use de\interaapps\uppm\helper\Files;
 use de\interaapps\uppm\helper\Web;
 use de\interaapps\uppm\UPPM;
@@ -55,9 +56,9 @@ abstract class Package {
         }
         $this->uppm->getLogger()->info("Copying $tmpName to $zipOutDir.");
 
-        if (file_exists($zipOutDir."/uppm.json")) {
+        if (file_exists($zipOutDir."/uppm.json") || file_exists($zipOutDir."/composer.json")) {
             $this->uppm->getLogger()->info("Adding to lock-file");
-            $conf = Configuration::fromJson(file_get_contents($zipOutDir."/uppm.json"));
+            $conf = $this->getConfig($zipOutDir);
             if (isset($conf->name) && $conf->name != "")
                 $outputDir = "modules/".str_replace("/", "-", $conf->name);
 
@@ -79,6 +80,10 @@ abstract class Package {
         Files::copyDir($zipOutDir, getcwd()."/".$outputDir);
         Files::deleteDir($tmpName);
         return true;
+    }
+
+    public function getConfig(string $dir) : Configuration {
+        return Configuration::fromJson(file_get_contents($dir."/uppm.json"));
     }
 
     public function remove(){
@@ -117,6 +122,9 @@ abstract class Package {
                 return new UPPMPackage($uppm, $name, $version);
             case "github":
                 return new GithubPackage($uppm, $name, $version);
+            case "packagist":
+            case "composer":
+                return new PackagistPackage($uppm, $name, $version);
             case "web":
                 return new WebPackage($uppm, $name, $version);
         }

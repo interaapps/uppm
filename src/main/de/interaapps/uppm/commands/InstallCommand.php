@@ -1,11 +1,8 @@
 <?php
 namespace de\interaapps\uppm\commands;
 
-
 use de\interaapps\uppm\helper\Web;
-use de\interaapps\uppm\package\GithubPackage;
 use de\interaapps\uppm\package\Package;
-use de\interaapps\uppm\package\UPPMPackage;
 use de\interaapps\uppm\UPPM;
 
 class InstallCommand implements Command {
@@ -28,13 +25,17 @@ class InstallCommand implements Command {
             if ($package->download()) {
                 $this->uppm->getLogger()->info("Adding to uppm.json->modules");
                 $package->addToConfig();
+                $this->uppm->getLogger()->success("Downloaded $args[0]!");
             }
         } else {
             $this->uppm->getLogger()->info("Installing Modules...");
+            $i = 0;
             foreach ($this->uppm->getCurrentProject()->getConfig()->modules as $name=>$version) {
                 $package = Package::getPackage($this->uppm, $name, $version);
                 $package->download();
+                $i++;
             }
+            $this->uppm->getLogger()->success("Installed $i packages!");
         }
     }
 }

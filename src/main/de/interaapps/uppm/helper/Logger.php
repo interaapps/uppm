@@ -53,6 +53,10 @@ class Logger {
         $this->log(self::TURQUIOUS."INFO: ".self::ENDC.$e);
     }
 
+    public function success($e) : void {
+        $this->log(self::GREEN."DONE: ".self::ENDC.$e);
+    }
+
     public static function createEchoLogger() : Logger {
         return new Logger(function($s){
             echo $s;

@@ -1,6 +1,7 @@
 <?php
 namespace de\interaapps\uppm;
 
+use de\interaapps\jsonplus\JSONPlus;
 use de\interaapps\uppm\commands\AddAutoloadCommand;
 use de\interaapps\uppm\commands\BuildCommand;
 use de\interaapps\uppm\commands\CreateCommand;
@@ -22,9 +23,11 @@ class UPPM {
     private Logger $logger;
     private array $commands;
     private Project $currentProject;
+    private JSONPlus $jsonPlus;
 
     public function __construct(private array $args){
         $this->logger = Logger::createEchoLogger();
+        $this->jsonPlus = JSONPlus::createDefault();
 
         $this->commands = [
             "install" => new InstallCommand($this),
@@ -41,6 +44,7 @@ class UPPM {
 
             "ghc" => new GHCCommand($this)
         ];
+
         $this->commands["i"] = $this->commands["install"];
         $this->commands["r"] = $this->commands["run"];
 
@@ -90,4 +94,9 @@ class UPPM {
     public function getCommands(): array {
         return $this->commands;
     }
+
+    public function getJsonPlus(): JSONPlus {
+        return $this->jsonPlus;
+    }
+
 }

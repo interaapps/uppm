@@ -20,6 +20,7 @@ class Configuration {
     public object|null $modules;
 
     public object|null $namespaceBindings;
+    public array|null $initScripts;
     public object|null $directNamespaceBindings;
     public object|null $packages;
 
@@ -33,6 +34,8 @@ class Configuration {
         $this->build = (object)[];
         $this->serve = (object)[];
         $this->run = (object)[];
+        $this->namespaceBindings = (object)[];
+        $this->initScripts = [];
     }
 
     public function save() : void {
@@ -41,18 +44,40 @@ class Configuration {
         file_put_contents(getcwd()."/uppm.json", $this->json());
     }
 
-    public function lock($lockFile, $folderPrefix="") : void {
-        if (isset($this->namespaceBindings))
-            foreach ($this->namespaceBindings as $name=>$v)
+    public function lock(LockFile $lockFile, $folderPrefix="") : void {
+        if (isset($this->namespace_bindings)) {
+            foreach ($this->namespace_bindings as $name => $v) {
+                $this->namespaceBindings[$name] = $v;
+            }
+        }
+
+        if (isset($this->namespaceBindings)) {
+            foreach ($this->namespaceBindings as $name => $v) {
+                if (str_ends_with($name, "\\")) {
+                    unset($this->namespaceBindings->{$name});
+                    $name = substr($name, 0, strlen($name) - 1);
+                }
+                if (is_array($v))
+                    $v = $v[0];
+                if (str_ends_with($v, "/"))
+                    $v = substr($v, 0, strlen($v)-1);
                 $this->namespaceBindings->{$name} = $folderPrefix . "/" . $v;
-        if (isset($this->namespace_bindings))
-            foreach ($this->namespace_bindings as $name=>$v)
-                $this->namespace_bindings->{$name} = $folderPrefix . "/" . $v;
+            }
+        }
+
+        if (isset($this->initScripts)) {
+            foreach ($this->initScripts as $f) {
+                $this->initScripts[] = $folderPrefix . "/" . $f;
+            }
+        }
 
         if (isset($this->directNamespaceBindings))
             $lockFile->directNamespaceBindings = (object) array_merge((array) $lockFile->directNamespaceBindings, (array) $this->directNamespaceBindings);
         if (isset($this->namespaceBindings))
             $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array) $this->namespaceBindings);
+
+        if (isset($this->initScripts))
+            $lockFile->initScripts = array_unique(array_merge((array) $lockFile->initScripts, (array) $this->initScripts));
 
         // Backwards Compatibility
 

@@ -15,6 +15,8 @@ Hello World!
 $ uppm install uloleorm
 # Or from github
 $ uppm install interaapps/ulole-orm+master@github
+# Or from composer
+$ uppm install interaapps/uloleorm@composer
 # Or more...
 
 # Building your app (Useful for CLI-Apps or non-web-hosted stuff)
