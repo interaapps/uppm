@@ -9,11 +9,10 @@ class GHCCommand implements Command {
     }
 
     public function execute(array $args) {
-        if (count($args) == 1) {
-            if (!str_contains($args[0], "/"))
-                $args[0] = "_/$args[0]";
-            Web::httpRequest("https://central.uppm.interaapps.de/$args[0]/checkgithub");
-            $this->uppm->getLogger()->info("Done!");
-        }
+        $a = count($args) == 1 ? $args[0] : $this->uppm->getCurrentProject()->getConfig()->name;
+        if (!str_contains($a, "/"))
+            $a = "_/$a";
+        Web::httpRequest("https://central.uppm.interaapps.de/$a/checkgithub");
+        $this->uppm->getLogger()->info("Done!");
     }
 }

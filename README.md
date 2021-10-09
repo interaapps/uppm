@@ -4,6 +4,8 @@
 ```shell
 # Creating an boilerplate app
 $ uppm create testapp
+// Using template (For example interaapps/ulole-framework)
+$ uppm create testapp interaapps/ulole-framework:3.2.0
 INFO: Creating in test123
 $ cd testapp
 
@@ -97,4 +99,9 @@ uppm autoload
 ```php
 <?php
 (include 'autoload.php')();
+```
+
+# Docker
+```shell
+docker pull interaapps/uppm
 ```

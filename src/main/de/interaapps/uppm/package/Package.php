@@ -21,39 +21,22 @@ abstract class Package {
     }
 
     public function download() : bool {
-        $tmpName = sys_get_temp_dir()."/"."ULOLE-".rand(111111111111, 99999999999);
         $downloadUrl = $this->getDownloadURL();
         if ($downloadUrl == null) {
-            $this->uppm->getLogger()->err("Can't found package $this->name:$this->version");
+            $this->uppm->getLogger()->err("Can't find package $this->name:$this->version");
             return false;
         }
         $this->uppm->getLogger()->info("Downloading from $downloadUrl");
-        file_put_contents($tmpName.".zip", Web::httpRequest($downloadUrl));
-        $zip = new ZipArchive;
-        $res = $zip->open($tmpName.".zip");
-        if ($res === TRUE) {
-            $zip->extractTo($tmpName);
-            $zip->close();
-        } else {
-            $this->uppm->getLogger()->err("Zip from $downloadUrl invalid!");
-        }
-        if (!file_exists(getcwd()."/modules/"))
-            mkdir(getcwd()."/modules/");
+
+        if (!file_exists($this->uppm->getCurrentDir()."/modules/"))
+            mkdir($this->uppm->getCurrentDir()."/modules/");
 
         $cname = str_replace("/", "-", $this->getName());
 
+        [$zipOutDir, $tmpName] = $this->unpack();
 
-        $zipOutDir = $tmpName;
+        $outputDir = $this->uppm->getCurrentDir()."/modules/".$cname;
 
-        $outputDir = getcwd()."/modules/".$cname;
-
-        $items = scandir($zipOutDir);
-        $items = array_values(array_filter($items, fn($n)=>$n != "." && $n != ".."));
-
-        if (count($items) == 1) {
-            if (is_dir($zipOutDir."/".$items[0]))
-                $zipOutDir .= "/".$items[0];
-        }
         $this->uppm->getLogger()->info("Copying $tmpName to $zipOutDir.");
 
         if (file_exists($zipOutDir."/uppm.json") || file_exists($zipOutDir."/composer.json")) {
@@ -64,10 +47,10 @@ abstract class Package {
 
             $this->uppm->getLogger()->info("OUTPUT DIR ./modules/".$outputDir);
 
-            if (file_exists(getcwd()."/".$outputDir))
-                Files::deleteDir(getcwd()."/".$outputDir);
+            if (file_exists($this->uppm->getCurrentDir()."/".$outputDir))
+                Files::deleteDir($this->uppm->getCurrentDir()."/".$outputDir);
 
-            $conf->lock($this->uppm->getCurrentProject()->getLockFile(), $outputDir);
+            $conf->lock($this->uppm, $this->uppm->getCurrentProject()->getLockFile(), $outputDir);
             if (isset($conf->modules)) {
                 foreach ($conf->modules as $name=>$ver) {
                     if (!isset($this?->uppm?->getCurrentProject()?->getConfig()?->modules?->{$name})) {
@@ -77,9 +60,32 @@ abstract class Package {
                 }
             }
         }
-        Files::copyDir($zipOutDir, getcwd()."/".$outputDir);
+        Files::copyDir($zipOutDir, $this->uppm->getCurrentDir()."/".$outputDir);
         Files::deleteDir($tmpName);
         return true;
+    }
+
+    public function unpack(): array {
+        $tmpName = sys_get_temp_dir()."/"."ULOLE-".rand(111111111111, 99999999999);
+
+        file_put_contents($tmpName.".zip", Web::httpRequest($this->getDownloadURL()));
+        $zip = new ZipArchive;
+        $res = $zip->open($tmpName.".zip");
+        if ($res === TRUE) {
+            $zip->extractTo($tmpName);
+            $zip->close();
+        } else {
+            $this->uppm->getLogger()->err("Zip from {$this->getDownloadURL()} invalid!");
+        }
+        $zipOutDir = $tmpName;
+        $items = scandir($zipOutDir);
+        $items = array_values(array_filter($items, fn($n)=>$n != "." && $n != ".."));
+
+        if (count($items) == 1) {
+            if (is_dir($zipOutDir."/".$items[0]))
+                $zipOutDir .= "/".$items[0];
+        }
+        return [$zipOutDir, $tmpName];
     }
 
     public function getConfig(string $dir) : Configuration {
@@ -95,7 +101,7 @@ abstract class Package {
     public function addToConfig(){
         $config = $this->uppm->getCurrentProject()->getConfig();
         $config->modules->{$this->name} = $this->version;
-        $config->save();
+        $config->save($this->uppm);
     }
 
     public abstract function getDownloadURL() : string|null;
@@ -111,12 +117,20 @@ abstract class Package {
     public static function getPackage($uppm, $gname, $version) : Package|null {
         $source = "uppm";
 
-        $split = explode("@", $gname);
-        $name = $split[0];
+        if (str_contains($version,"@")) {
+            $split = explode("@", $version);
+            $version = $split[0];
+            $name = $gname;
 
-        if (count($split) > 1)
-            $source = $split[1];
+            if (count($split) > 1)
+                $source = $split[1];
+        } else {
+            $split = explode("@", $gname);
+            $name = $split[0];
 
+            if (count($split) > 1)
+                $source = $split[1];
+        }
         switch ($source) {
             case "uppm":
                 return new UPPMPackage($uppm, $name, $version);

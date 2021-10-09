@@ -99,6 +99,6 @@ class PackagistPackage extends Package {
     public function addToConfig(){
         $config = $this->uppm->getCurrentProject()->getConfig();
         $config->modules->{$this->name."@composer"} = $this->version;
-        $config->save();
+        $config->save($this->uppm);
     }
 }

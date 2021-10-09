@@ -3,6 +3,7 @@ namespace de\interaapps\uppm\config;
 
 
 use de\interaapps\uppm\helper\JSONModel;
+use de\interaapps\uppm\UPPM;
 
 class Configuration {
     use JSONModel;
@@ -38,13 +39,13 @@ class Configuration {
         $this->initScripts = [];
     }
 
-    public function save() : void {
+    public function save($uppm) : void {
         if (($key = array_search("https://central.uppm.interaapps.de", $this->repositories)) !== false)
             unset($this->repositories[$key]);
-        file_put_contents(getcwd()."/uppm.json", $this->json());
+        file_put_contents($uppm->getCurrentDir()."/uppm.json", $this->json());
     }
 
-    public function lock(LockFile $lockFile, $folderPrefix="") : void {
+    public function lock(UPPM $uppm, LockFile $lockFile, $folderPrefix="") : void {
         if (isset($this->namespace_bindings)) {
             foreach ($this->namespace_bindings as $name => $v) {
                 $this->namespaceBindings->{$name} = $v;
@@ -87,6 +88,6 @@ class Configuration {
             $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array) $this->namespace_bindings);
 
         $lockFile->modules = (object) array_merge((array) $lockFile->modules, [$this->name => $this->version]);
-        $lockFile->save();
+        $lockFile->save($uppm);
     }
 }

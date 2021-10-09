@@ -14,7 +14,7 @@ class BuildCommand implements Command {
 
     public function execute(array $args) {
         $config = $this->uppm->getCurrentProject()->getConfig();
-        $outputLocation = getcwd()."/".($config?->build?->outputDir ?: "target");
+        $outputLocation = $this->uppm->getCurrentDir()."/".($config?->build?->outputDir ?: "target");
         $outputFile = $config?->build?->outputName ?: "{name}-{version}";
         $ignored =  $config?->build?->ignored ?: [];
 

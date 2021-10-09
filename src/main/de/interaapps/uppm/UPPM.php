@@ -24,8 +24,9 @@ class UPPM {
     private array $commands;
     private Project $currentProject;
     private JSONPlus $jsonPlus;
+    private string $currentDir;
 
-    public function __construct(private array $args){
+    public function __construct(private array $args, string|null $dir = null){
         $this->logger = Logger::createEchoLogger();
         $this->jsonPlus = JSONPlus::createDefault();
 
@@ -45,17 +46,22 @@ class UPPM {
             "ghc" => new GHCCommand($this)
         ];
 
+        if ($dir == null)
+            $this->currentDir = getcwd();
+        else
+            $this->currentDir = $dir;
+
         $this->commands["i"] = $this->commands["install"];
         $this->commands["r"] = $this->commands["run"];
 
         $config = new Configuration();
         $lockFile = new LockFile();
-        if (file_exists(getcwd()."/uppm.json")) {
-            $config = Configuration::fromJson(file_get_contents(getcwd()."/uppm.json"));
+        if (file_exists($this->currentDir."/uppm.json")) {
+            $config = Configuration::fromJson(file_get_contents($this->currentDir."/uppm.json"));
         }
         array_push($config->repositories, "https://central.uppm.interaapps.de");
-        if (file_exists(getcwd()."/uppm.locks.json")) {
-            $lockFile = LockFile::fromJson(file_get_contents(getcwd()."/uppm.locks.json"));
+        if (file_exists($this->currentDir."/uppm.locks.json")) {
+            $lockFile = LockFile::fromJson(file_get_contents($this->currentDir."/uppm.locks.json"));
         }
         $this->currentProject = new Project(__DIR__, $config, $lockFile);
     }
@@ -97,6 +103,10 @@ class UPPM {
 
     public function getJsonPlus(): JSONPlus {
         return $this->jsonPlus;
+    }
+
+    public function getCurrentDir(): string {
+        return $this->currentDir;
     }
 
 }

@@ -2,6 +2,7 @@
 namespace de\interaapps\uppm\config;
 
 use de\interaapps\uppm\helper\JSONModel;
+use de\interaapps\uppm\UPPM;
 
 class LockFile {
     use JSONModel;
@@ -18,7 +19,7 @@ class LockFile {
         $this->initScripts = [];
     }
 
-    public function save(){
+    public function save(UPPM $uppm){
         $lockNameSpaces = [];
         $namespaceBindingsKeys = array_keys((array) $this->namespaceBindings);
         usort($namespaceBindingsKeys, function ($a, $b) {
@@ -28,7 +29,7 @@ class LockFile {
             $this->addRec($this->namespaceBindings->{$key}, $key, $lockNameSpaces);
         }
 
-        file_put_contents(getcwd()."/modules/autoload_namespaces.php", "<?php
+        file_put_contents($uppm->getCurrentDir()."/modules/autoload_namespaces.php", "<?php
 // UPPM generates this file to add a more efficient way of autoloading a class.
 // Do not change something in here.
 
