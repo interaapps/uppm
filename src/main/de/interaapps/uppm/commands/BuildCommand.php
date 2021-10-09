@@ -38,7 +38,6 @@ class BuildCommand implements Command {
 
         $this->uppm->getLogger()->info("Output File: ".$outputLocation."/".$outputFile);
         $phar = new Phar($outputLocation."/".$outputFile);
-
         $st = $phar->createDefaultStub($run);
 
         $phar->buildFromDirectory(".", '/^(?!(.*target))'.(function() use ($ignored) {
@@ -51,11 +50,7 @@ class BuildCommand implements Command {
         $this->uppm->getLogger()->info("Setting stub...");
 
         //$phar->setDefaultStub($run, "/" . $run);
-
-
-
         $phar->setStub("#!/usr/bin/php \n".$st);
-
 
         if (file_exists($outputLocation."/".$outputFile.".gz")) {
             echo "DELETING OLD ONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
