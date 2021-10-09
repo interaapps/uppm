@@ -4,6 +4,7 @@ WORKDIR /root/app
 
 COPY src          src
 COPY autoload.php autoload.php
+COPY target       target
 COPY uppm.json    uppm.json
 
 RUN \
