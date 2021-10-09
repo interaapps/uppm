@@ -16,15 +16,15 @@ class CreateCommand implements Command {
 
     public function execute(array $args) {
         if (count($args) > 0) {
-            $dirName = $args[0];
+            $name = $args[0];
+            $dirName = $this->uppm->getCurrentDir()."/".$name;
             if (file_exists($dirName)) {
                 $this->uppm->getLogger()->info("The folder already exists");
                 if (strtolower(readline("Do you want to continue? (y/N): ")) != "y")
-                    exit();
+                exit();
             }
             $this->uppm->getLogger()->info("Creating in $dirName");
 
-            $dirName = $this->uppm->getCurrentDir()."/".$dirName;
 
             if (count($args) > 1) {
                 $src = $args[1];
@@ -39,7 +39,7 @@ class CreateCommand implements Command {
                 $tmpUPPM->start();
             } else {
                 $config = new Configuration();
-                $config->name = $dirName;
+                $config->name = $name;
                 $config->version = "1.0";
 
                 mkdir($dirName);

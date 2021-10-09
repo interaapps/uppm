@@ -16,6 +16,7 @@ class BuildCommand implements Command {
         $config = $this->uppm->getCurrentProject()->getConfig();
         $outputLocation = $this->uppm->getCurrentDir()."/".($config?->build?->outputDir ?: "target");
         $outputFile = $config?->build?->outputName ?: "{name}-{version}";
+
         $ignored =  $config?->build?->ignored ?: [];
 
         $run = $config->run->{$config?->build?->run ?: "start"};
@@ -35,6 +36,7 @@ class BuildCommand implements Command {
         if (file_exists($outputLocation."/".$outputFile.".gz"))
             unlink($outputLocation."/".$outputFile.".gz");
 
+        $this->uppm->getLogger()->info("Output File: ".$outputLocation."/".$outputFile);
         $phar = new Phar($outputLocation."/".$outputFile);
 
         $st = $phar->createDefaultStub($run);
