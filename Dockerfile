@@ -10,7 +10,6 @@ RUN \
     apk add php8 php8-common wget bash \
     php8-bcmath php8-bz2 php8-calendar php8-cgi \
     php8-common php8-ctype php8-curl php8-dba \
-    #php8-dbg php8-phpdbg
     php8-doc php8-dom php8-embed \
     php8-enchant php8-exif php8-ffi php8-fileinfo \
     php8-fpm php8-ftp php8-gd php8-gettext \
