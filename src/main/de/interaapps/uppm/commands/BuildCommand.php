@@ -53,7 +53,6 @@ class BuildCommand implements Command {
         $phar->setStub("#!/usr/bin/php \n".$st);
 
         if (file_exists($outputLocation."/".$outputFile.".gz")) {
-            echo "DELETING OLD ONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
             unlink($outputLocation . "/" . $outputFile . ".gz");
         }
 

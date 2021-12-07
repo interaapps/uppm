@@ -35,7 +35,7 @@ class LockFile {
 
 return ".var_export($lockNameSpaces, true).";");
 
-        file_put_contents("uppm.locks.json", $this->json());
+        file_put_contents($uppm->getCurrentDir()."/uppm.locks.json", $this->json());
     }
 
     private function addRec($dir, $key, &$lockNameSpaces){

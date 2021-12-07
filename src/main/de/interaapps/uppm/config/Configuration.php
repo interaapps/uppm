@@ -52,6 +52,9 @@ class Configuration {
             }
         }
 
+        if (isset($this->namespace_bindings))
+            $this->namespaceBindings = isset($this->namespaceBindings) ? (object) array_merge((array) $this->namespaceBindings, (array) $this->namespace_bindings) : $this->namespace_bindings;
+
         if (isset($this->namespaceBindings)) {
             foreach ($this->namespaceBindings as $name => $v) {
                 if (str_ends_with($name, "\\")) {
@@ -72,20 +75,18 @@ class Configuration {
             }
         }
 
-        if (isset($this->directNamespaceBindings))
-            $lockFile->directNamespaceBindings = (object) array_merge((array) $lockFile->directNamespaceBindings, (array) $this->directNamespaceBindings);
-        if (isset($this->namespaceBindings))
-            $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array) $this->namespaceBindings);
-
         if (isset($this->initScripts))
             $lockFile->initScripts = array_unique(array_merge((array) $lockFile->initScripts, (array) $this->initScripts));
 
-        // Backwards Compatibility
+        if (isset($this->directNamespaceBindings))
+            $lockFile->directNamespaceBindings = (object) array_merge((array) $lockFile->directNamespaceBindings, (array) $this->directNamespaceBindings);
 
+        // Backwards Compatibility
         if (isset($this->directnamespaces))
             $lockFile->directNamespaceBindings = (object) array_merge((array) $lockFile->directNamespaceBindings, (array) $this->directnamespaces);
-        if (isset($this->namespace_bindings))
-            $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array) $this->namespace_bindings);
+
+        if (isset($this->namespaceBindings))
+            $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array) $this->namespaceBindings);
 
         $lockFile->modules = (object) array_merge((array) $lockFile->modules, [$this->name => $this->version]);
         $lockFile->save($uppm);

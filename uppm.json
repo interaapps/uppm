@@ -1,6 +1,6 @@
 {
     "name": "uppm",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "phpVersion": ">8.0",
     "repositories": [],
     "run": {
