@@ -48,16 +48,16 @@ uppm help
 ```
 
 ### Requirements
-- php8.0
-- php8.0-zip
-- php8.0-json
-- php8.0-phar (And enabled in php.ini, `/etc/php/8.0/cli/php.ini`, `phar.readonly = Off`)
+- php8.1
+- php8.1-zip
+- php8.1-json
+- php8.1-phar (And enabled in php.ini, `/etc/php/8.1/cli/php.ini`, `phar.readonly = Off`)
 ```shell
 # Installing dependencies
-sudo apt install php8.0 php8.0-zip php8.0-json php8.0-phar
+sudo apt install php8.1 php8.1-zip php8.1-json php8.1-phar
 
 # Adding phar rule to php.ini (For building projects)
-sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
+sudo echo phar.readonly = Off >> /etc/php/8.1/cli/php.ini
 ```
 
 ### uppm.json
@@ -66,7 +66,7 @@ sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
 {
   "name": "uppm",
   "version": "1.0",
-  "phpVersion": ">8.0",
+  "phpVersion": ">8.1",
   "repositories": [],
   "run": {
     "start": "src\/main\/bootstrap.php",

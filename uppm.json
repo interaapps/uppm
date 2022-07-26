@@ -1,7 +1,7 @@
 {
     "name": "uppm",
     "version": "2.2.2",
-    "phpVersion": ">8.0",
+    "phpVersion": ">8.1",
     "repositories": [],
     "run": {
         "start": "src\/main\/bootstrap.php",

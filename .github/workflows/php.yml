@@ -16,14 +16,14 @@ jobs:
     
     - name: Install dependencies
       run: |
-        php8.0 target/uppm.phar lock
-        php8.0 target/uppm.phar install
+        php8.1 target/uppm.phar lock
+        php8.1 target/uppm.phar install
 
     - name: Building
       run: |
-        sudo chmod 777 /etc/php/8.0/cli/php.ini
-        sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
-        php8.0 src/main/bootstrap.php build
+        sudo chmod 777 /etc/php/8.1/cli/php.ini
+        sudo echo phar.readonly = Off >> /etc/php/8.1/cli/php.ini
+        php8.1 src/main/bootstrap.php build
   test:
     name: Tests
     runs-on: ubuntu-latest
@@ -33,11 +33,11 @@ jobs:
     
     - name: Building UPPM
       run: |
-        sudo chmod 777 /etc/php/8.0/cli/php.ini
-        sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
-        php8.0 target/uppm.phar lock
-        php8.0 target/uppm.phar install
-        php8.0 src/main/bootstrap.php build
+        sudo chmod 777 /etc/php/8.1/cli/php.ini
+        sudo echo phar.readonly = Off >> /etc/php/8.1/cli/php.ini
+        php8.1 target/uppm.phar lock
+        php8.1 target/uppm.phar install
+        php8.1 src/main/bootstrap.php build
         chmod +x ./target/uppm.phar
       
     - name: Install packages
@@ -57,8 +57,8 @@ jobs:
         ../target/uppm.phar lock
         ../target/uppm.phar run start
         echo \n
-        sudo chmod 777 /etc/php/8.0/cli/php.ini
-        sudo echo phar.readonly = Off >> /etc/php/8.0/cli/php.ini
+        sudo chmod 777 /etc/php/8.1/cli/php.ini
+        sudo echo phar.readonly = Off >> /etc/php/8.1/cli/php.ini
         ../target/uppm.phar build
         chmod +x target/test-1.0.phar
         ./target/test-1.0.phar

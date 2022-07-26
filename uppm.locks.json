@@ -1,0 +1,23 @@
+{
+    "namespaceBindings": {
+        "de\\interaapps\\ulole\\orm": "de\/interaapps\/ulole\/orm",
+        "de\\interaapps\\ulole\\router": "de\/interaapps\/ulole\/router",
+        "de\\interaapps\\jsonplus": "modules\/interaapps-jsonplus\/src\/main\/de\/interaapps\/jsonplus",
+        "de\\interaapps\\ulole\\core": "modules\/ulole-core\/src\/main\/de\/interaapps\/ulole\/core",
+        "de\\interaapps\\uppm": ".\/src\/main\/de\/interaapps\/uppm"
+    },
+    "directNamespaceBindings": {
+        "de\\interaapps\\ulole\\orm\\Database": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/Database.php",
+        "de\\interaapps\\ulole\\orm\\ORMModel": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/ORMModel.php",
+        "de\\interaapps\\ulole\\orm\\UloleORM": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/UloleORM.php",
+        "de\\interaapps\\ulole\\orm\\Query": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/Query.php"
+    },
+    "modules": {
+        "uloleorm": "2.0.1",
+        "deverm": "5.0.5",
+        "interaapps\/jsonplus": "1.0.4",
+        "ulole-core": "3.0.6",
+        "uppm": "2.2.2"
+    },
+    "initScripts": []
+}
