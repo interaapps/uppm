@@ -32,6 +32,9 @@ class LockFile {
             $this->addRec($uppm, $this->namespaceBindings->{$key}, $key, $lockNameSpaces);
         }
 
+        if (!is_dir($uppm->getCurrentDir() . "/modules"))
+            mkdir($uppm->getCurrentDir() . "/modules");
+
         file_put_contents($uppm->getCurrentDir() . "/modules/autoload_namespaces.php", "<?php
 // UPPM generates this file to add a more efficient way of autoloading a class.
 // Do not change something in here.
