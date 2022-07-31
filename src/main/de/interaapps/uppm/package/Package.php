@@ -59,7 +59,6 @@ abstract class Package {
             if (file_exists($this->uppm->getCurrentDir() . "/" . $outputDir))
                 Files::deleteDir($this->uppm->getCurrentDir() . "/" . $outputDir);
 
-            $conf->lock($this->uppm, $this->uppm->getCurrentProject()->getLockFile(), $outputDir);
             if (isset($conf->modules)) {
                 foreach ($conf->modules as $name => $ver) {
                     if (!isset($this->uppm->getCurrentProject()?->getConfig()?->modules?->{$name})) {
@@ -72,6 +71,8 @@ abstract class Package {
                     }
                 }
             }
+
+            $conf->lock($this->uppm, $this->uppm->getCurrentProject()->getLockFile(), $outputDir);
         }
         Files::copyDir($zipOutDir, $this->uppm->getCurrentDir() . "/$outputDir");
         Files::deleteDir($tmpName);
@@ -138,26 +139,21 @@ abstract class Package {
             $version = $split[0];
             $name = $gname;
 
-            if (count($split) > 1)
-                $source = $split[1];
         } else {
             $split = explode("@", $gname);
             $name = $split[0];
 
-            if (count($split) > 1)
-                $source = $split[1];
         }
-        switch ($source) {
-            case "uppm":
-                return new UPPMPackage($uppm, $name, $version);
-            case "github":
-                return new GithubPackage($uppm, $name, $version);
-            case "packagist":
-            case "composer":
-                return new PackagistPackage($uppm, $name, $version);
-            case "web":
-                return new WebPackage($uppm, $name, $version);
-        }
-        return null;
+
+        if (count($split) > 1)
+            $source = $split[1];
+
+        return match ($source) {
+            "uppm" => new UPPMPackage($uppm, $name, $version),
+            "github" => new GithubPackage($uppm, $name, $version),
+            "packagist", "composer" => new PackagistPackage($uppm, $name, $version),
+            "web" => new WebPackage($uppm, $name, $version),
+            default => null,
+        };
     }
 }

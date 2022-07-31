@@ -11,7 +11,7 @@ class GithubPackage extends Package {
     }
 
 
-    public function addToConfig() {
+    public function addToConfig(): void {
         $config = $this->uppm->getCurrentProject()->getConfig();
         $config->modules->{$this->name . "@github"} = $this->version;
         $config->save($this->uppm);

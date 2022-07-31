@@ -2,6 +2,7 @@
 
 namespace de\interaapps\uppm\config;
 
+use de\interaapps\jsonplus\attributes\Serialize;
 use de\interaapps\jsonplus\JSONModel;
 use de\interaapps\uppm\UPPM;
 
@@ -20,14 +21,15 @@ class LockFile {
         $this->initScripts = [];
     }
 
-    public function save(UPPM $uppm) {
+    public function save(UPPM $uppm): void {
         $lockNameSpaces = [];
         $namespaceBindingsKeys = array_keys((array)$this->namespaceBindings);
         usort($namespaceBindingsKeys, function ($a, $b) {
             return strlen($b) - strlen($a);
         });
+
         foreach ($namespaceBindingsKeys as $key) {
-            $this->addRec($this->namespaceBindings->{$key}, $key, $lockNameSpaces);
+            $this->addRec($uppm, $this->namespaceBindings->{$key}, $key, $lockNameSpaces);
         }
 
         file_put_contents($uppm->getCurrentDir() . "/modules/autoload_namespaces.php", "<?php
@@ -39,14 +41,19 @@ return " . var_export($lockNameSpaces, true) . ";");
         file_put_contents($uppm->getCurrentDir() . "/uppm.locks.json", $this->toJson());
     }
 
-    private function addRec($dir, $key, &$lockNameSpaces) {
-        foreach (scandir($dir) as $f) {
-            if ($f != ".." && $f != ".") {
-                if (is_dir($dir . "/" . $f)) {
-                    $this->addRec($dir . "/" . $f, $key, $lockNameSpaces);
-                } else {
-                    $class = str_replace(".php", "", $f);
-                    $lockNameSpaces[$key . "\\" . $class] = $dir . "/" . $f;
+    private function addRec(UPPM $uppm, $dir, $key, &$lockNameSpaces): void {
+        if (is_dir($dir)) {
+            $d = @scandir($dir);
+            if ($d === false)
+                return;
+            foreach ($d as $f) {
+                if ($f != ".." && $f != ".") {
+                    if (is_dir($dir . "/" . $f)) {
+                        $this->addRec($uppm, $dir . "/" . $f, $key, $lockNameSpaces);
+                    } else {
+                        $class = str_replace(".php", "", $f);
+                        $lockNameSpaces[$key . "\\" . $class] = $dir . "/" . $f;
+                    }
                 }
             }
         }
