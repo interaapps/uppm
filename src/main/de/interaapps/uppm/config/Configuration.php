@@ -1,4 +1,5 @@
 <?php
+
 namespace de\interaapps\uppm\config;
 
 
@@ -39,13 +40,13 @@ class Configuration {
         $this->initScripts = [];
     }
 
-    public function save($uppm) : void {
+    public function save($uppm): void {
         if (($key = array_search("https://central.uppm.interaapps.de", $this->repositories)) !== false)
             unset($this->repositories[$key]);
-        file_put_contents($uppm->getCurrentDir()."/uppm.json", $this->toJson());
+        file_put_contents($uppm->getCurrentDir() . "/uppm.json", $this->toJson());
     }
 
-    public function lock(UPPM $uppm, LockFile $lockFile, $folderPrefix="") : void {
+    public function lock(UPPM $uppm, LockFile $lockFile, $folderPrefix = ""): void {
         if (isset($this->namespace_bindings)) {
             foreach ($this->namespace_bindings as $name => $v) {
                 $this->namespaceBindings->{$name} = $v;
@@ -53,7 +54,7 @@ class Configuration {
         }
 
         if (isset($this->namespace_bindings))
-            $this->namespaceBindings = isset($this->namespaceBindings) ? (object) array_merge((array) $this->namespaceBindings, (array) $this->namespace_bindings) : $this->namespace_bindings;
+            $this->namespaceBindings = isset($this->namespaceBindings) ? (object)array_merge((array)$this->namespaceBindings, (array)$this->namespace_bindings) : $this->namespace_bindings;
 
         if (isset($this->namespaceBindings)) {
             foreach ($this->namespaceBindings as $name => $v) {
@@ -64,7 +65,7 @@ class Configuration {
                 if (is_array($v))
                     $v = $v[0];
                 if (str_ends_with($v, "/"))
-                    $v = substr($v, 0, strlen($v)-1);
+                    $v = substr($v, 0, strlen($v) - 1);
                 $this->namespaceBindings->{$name} = $folderPrefix . "/" . $v;
             }
         }
@@ -76,19 +77,19 @@ class Configuration {
         }
 
         if (isset($this->initScripts))
-            $lockFile->initScripts = array_unique(array_merge((array) $lockFile->initScripts, (array) $this->initScripts));
+            $lockFile->initScripts = array_unique(array_merge((array)$lockFile->initScripts, (array)$this->initScripts));
 
         if (isset($this->directNamespaceBindings))
-            $lockFile->directNamespaceBindings = (object) array_merge((array) $lockFile->directNamespaceBindings, (array) $this->directNamespaceBindings);
+            $lockFile->directNamespaceBindings = (object)array_merge((array)$lockFile->directNamespaceBindings, (array)$this->directNamespaceBindings);
 
         // Backwards Compatibility
         if (isset($this->directnamespaces))
-            $lockFile->directNamespaceBindings = (object) array_merge((array) $lockFile->directNamespaceBindings, (array) $this->directnamespaces);
+            $lockFile->directNamespaceBindings = (object)array_merge((array)$lockFile->directNamespaceBindings, (array)$this->directnamespaces);
 
         if (isset($this->namespaceBindings))
-            $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array) $this->namespaceBindings);
+            $lockFile->namespaceBindings = (object)array_merge((array)$lockFile->namespaceBindings, (array)$this->namespaceBindings);
 
-        $lockFile->modules = (object) array_merge((array) $lockFile->modules, [$this->name => $this->version]);
+        $lockFile->modules = (object)array_merge((array)$lockFile->modules, [$this->name => $this->version]);
         $lockFile->save($uppm);
     }
 }

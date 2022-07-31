@@ -1,4 +1,5 @@
 <?php
+
 namespace de\interaapps\uppm\commands;
 
 use de\interaapps\uppm\UPPM;

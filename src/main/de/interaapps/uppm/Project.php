@@ -1,16 +1,16 @@
 <?php
+
 namespace de\interaapps\uppm;
 
 
 use de\interaapps\uppm\config\Configuration;
 use de\interaapps\uppm\config\LockFile;
-use de\interaapps\uppm\package\Package;
 
 class Project {
 
-    public function __construct(private string $dir,
+    public function __construct(private string        $dir,
                                 private Configuration $config,
-                                private LockFile $lockFile) {
+                                private LockFile      $lockFile) {
     }
 
     public function getConfig(): Configuration {
@@ -21,7 +21,7 @@ class Project {
         return $this->dir;
     }
 
-    public function getLockFile(): LockFile{
+    public function getLockFile(): LockFile {
         return $this->lockFile;
     }
 }

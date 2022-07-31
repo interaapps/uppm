@@ -1,22 +1,21 @@
 <?php
+
 namespace de\interaapps\uppm\commands;
 
 use de\interaapps\uppm\config\Configuration;
 use de\interaapps\uppm\helper\Files;
-use de\interaapps\uppm\helper\Web;
 use de\interaapps\uppm\package\Package;
 use de\interaapps\uppm\UPPM;
-use ZipArchive;
 
 class CreateCommand extends Command {
     public function execute(array $args) {
         if (count($args) > 0) {
             $name = $args[0];
-            $dirName = $this->uppm->getCurrentDir()."/".$name;
+            $dirName = $this->uppm->getCurrentDir() . "/" . $name;
             if (file_exists($dirName)) {
                 $this->uppm->getLogger()->info("The folder already exists");
                 if (strtolower(readline("Do you want to continue? (y/N): ")) != "y")
-                exit();
+                    exit();
             }
             $this->uppm->getLogger()->info("Creating in $dirName");
 
@@ -24,7 +23,7 @@ class CreateCommand extends Command {
             if (count($args) > 1) {
                 $src = $args[1];
                 $splitSrc = explode(":", $src);
-                $package = Package::getPackage(new UPPM([], getcwd()."/".$dirName), $splitSrc[0], count($splitSrc) > 1 ? $splitSrc[1] : "latest");
+                $package = Package::getPackage(new UPPM([], getcwd() . "/" . $dirName), $splitSrc[0], count($splitSrc) > 1 ? $splitSrc[1] : "latest");
                 [$zipOutDir, $tmpName] = $package->unpack();
 
                 Files::copyDir($zipOutDir, $dirName);
@@ -66,7 +65,7 @@ class Example {
 
                 $config->build = (object)["run" => "start"];
 
-                file_put_contents($dirName . "/uppm.json", $config->json());
+                file_put_contents($dirName . "/uppm.json", $config->toJson());
             }
         } else {
             $this->uppm->getLogger()->err("Please use 'uppm create {folder_name}'");

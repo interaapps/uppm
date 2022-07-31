@@ -1,8 +1,8 @@
 <?php
+
 namespace de\interaapps\uppm\commands;
 
 use de\interaapps\uppm\helper\Web;
-use de\interaapps\uppm\UPPM;
 
 class GHCCommand extends Command {
     public function execute(array $args) {

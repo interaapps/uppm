@@ -1,4 +1,5 @@
 <?php
+
 namespace de\interaapps\uppm\package;
 
 use de\interaapps\uppm\helper\Web;
@@ -6,7 +7,7 @@ use de\interaapps\uppm\package\uppm\models\PackageVersionResponse;
 
 class UPPMPackage extends Package {
 
-    public function getDownloadURL() : string|null {
+    public function getDownloadURL(): string|null {
         foreach ($this->uppm->getCurrentProject()->getConfig()->repositories as $repo) {
             $name = $this->getName();
             if (!str_contains($name, "/"))

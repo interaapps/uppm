@@ -1,8 +1,7 @@
 <?php
+
 namespace de\interaapps\uppm\commands;
 
-
-use de\interaapps\uppm\UPPM;
 
 class ServeCommand extends Command {
     public function execute(array $args) {
@@ -19,7 +18,7 @@ class ServeCommand extends Command {
         $this->uppm->getLogger()->info("Starting server on §1http://{$host}:§3{$port}§f!");
         $this->uppm->getLogger()->log("");
 
-        $exec = "cd $directory\nphp -S $host:$port -t ./ ".($routerFile ? escapeshellarg($routerFile) : '');
+        $exec = "cd $directory\nphp -S $host:$port -t ./ " . ($routerFile ? escapeshellarg($routerFile) : '');
 
         system($exec);
         exec($exec);

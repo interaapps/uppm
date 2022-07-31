@@ -1,4 +1,5 @@
 <?php
+
 namespace de\interaapps\uppm\package\uppm\models;
 
 use de\interaapps\jsonplus\JSONModel;

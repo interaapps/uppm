@@ -1,7 +1,6 @@
 <?php
-namespace de\interaapps\uppm\commands;
 
-use de\interaapps\uppm\UPPM;
+namespace de\interaapps\uppm\commands;
 
 class InitCommand extends Command {
 

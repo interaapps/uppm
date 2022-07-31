@@ -1,4 +1,5 @@
 <?php
+
 namespace de\interaapps\uppm\package;
 
 use de\interaapps\uppm\config\Configuration;
@@ -14,12 +15,12 @@ abstract class Package {
 
     public function __construct(
         protected UPPM $uppm,
-        protected $name,
-        protected $version,
+        protected      $name,
+        protected      $version,
     ) {
     }
 
-    public function download() : bool {
+    public function download(): bool {
         $this->uppm->getLogger()->log("\n");
         $this->uppm->getLogger()->log("Installing 📦 §h{$this->name} §g{$this->version}§f");
         $this->uppm->getLogger()->log("");
@@ -34,36 +35,36 @@ abstract class Package {
 
         $this->uppm->getLogger()->loadingBar(0.2, "Downloading");
 
-        if (!file_exists($this->uppm->getCurrentDir()."/modules/"))
-            mkdir($this->uppm->getCurrentDir()."/modules/");
+        if (!file_exists($this->uppm->getCurrentDir() . "/modules/"))
+            mkdir($this->uppm->getCurrentDir() . "/modules/");
 
         $cname = str_replace("/", "-", $this->getName());
 
         $this->uppm->getLogger()->loadingBar(0.4, "Unpacking files");
         [$zipOutDir, $tmpName] = $this->unpack();
 
-        $outputDir = $this->uppm->getCurrentDir()."/modules/".$cname;
+        $outputDir = $this->uppm->getCurrentDir() . "/modules/" . $cname;
 
         $this->uppm->getLogger()->loadingBar(0.6, "Copying files."); //  $tmpName to $zipOutDir
 
-        if (file_exists($zipOutDir."/uppm.json") || file_exists($zipOutDir."/composer.json")) {
+        if (file_exists($zipOutDir . "/uppm.json") || file_exists($zipOutDir . "/composer.json")) {
             $this->uppm->getLogger()->loadingBar(0.8, "Adding to lock-file");
 
             $conf = $this->getConfig($zipOutDir);
             if (isset($conf->name) && $conf->name != "")
-                $outputDir = "modules/".str_replace("/", "-", $conf->name);
+                $outputDir = "modules/" . str_replace("/", "-", $conf->name);
 
             $this->uppm->getLogger()->loadingBar(0.9, "Output dir §3$outputDir");
 
-            if (file_exists($this->uppm->getCurrentDir()."/".$outputDir))
-                Files::deleteDir($this->uppm->getCurrentDir()."/".$outputDir);
+            if (file_exists($this->uppm->getCurrentDir() . "/" . $outputDir))
+                Files::deleteDir($this->uppm->getCurrentDir() . "/" . $outputDir);
 
             $conf->lock($this->uppm, $this->uppm->getCurrentProject()->getLockFile(), $outputDir);
             if (isset($conf->modules)) {
-                foreach ($conf->modules as $name=>$ver) {
+                foreach ($conf->modules as $name => $ver) {
                     if (!isset($this->uppm->getCurrentProject()?->getConfig()?->modules?->{$name})) {
                         if ($conf->phpVersion > phpversion())
-                            $this->uppm->getLogger()->warn("The package {$conf->name} requires php version §h".$conf->phpVersion."§f. You are using version §c".phpversion()."§f.");
+                            $this->uppm->getLogger()->warn("The package {$conf->name} requires php version §h" . $conf->phpVersion . "§f. You are using version §c" . phpversion() . "§f.");
 
                         $package = Package::getPackage($this->uppm, $name, $ver);
 
@@ -72,7 +73,7 @@ abstract class Package {
                 }
             }
         }
-        Files::copyDir($zipOutDir, $this->uppm->getCurrentDir()."/$outputDir");
+        Files::copyDir($zipOutDir, $this->uppm->getCurrentDir() . "/$outputDir");
         Files::deleteDir($tmpName);
 
         $this->uppm->getLogger()->loadingBar(1, "Done");
@@ -81,7 +82,7 @@ abstract class Package {
     }
 
     public function unpack(): array {
-        $tmpName = sys_get_temp_dir()."/ULOLE-".rand(111111111111, 99999999999);
+        $tmpName = sys_get_temp_dir() . "/ULOLE-" . rand(111111111111, 99999999999);
 
         file_put_contents("$tmpName.zip", Web::httpRequest($this->getDownloadURL()));
         $zip = new ZipArchive;
@@ -97,13 +98,13 @@ abstract class Package {
         $items = array_values(array_filter($items, fn($n) => $n != "." && $n != ".."));
 
         if (count($items) == 1) {
-            if (is_dir($zipOutDir."/".$items[0]))
-                $zipOutDir .= "/".$items[0];
+            if (is_dir($zipOutDir . "/" . $items[0]))
+                $zipOutDir .= "/" . $items[0];
         }
         return [$zipOutDir, $tmpName];
     }
 
-    public function getConfig(string $dir) : Configuration {
+    public function getConfig(string $dir): Configuration {
         return $this->uppm->getJsonPlus()->fromJson(file_get_contents("$dir/uppm.json"), Configuration::class);
     }
 
@@ -119,9 +120,9 @@ abstract class Package {
         $config->save($this->uppm);
     }
 
-    public abstract function getDownloadURL() : string|null;
+    public abstract function getDownloadURL(): string|null;
 
-    public function getName(){
+    public function getName() {
         return $this->name;
     }
 
@@ -129,10 +130,10 @@ abstract class Package {
         return $this->version;
     }
 
-    public static function getPackage($uppm, $gname, $version) : Package|null {
+    public static function getPackage($uppm, $gname, $version): Package|null {
         $source = "uppm";
 
-        if (str_contains($version,"@")) {
+        if (str_contains($version, "@")) {
             $split = explode("@", $version);
             $version = $split[0];
             $name = $gname;
