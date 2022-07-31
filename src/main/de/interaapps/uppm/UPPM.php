@@ -30,7 +30,7 @@ class UPPM {
 
     public function __construct(private array $args, string|null $dir = null) {
         $this->logger = Logger::createEchoLogger();
-        $this->jsonPlus = JSONPlus::createDefault()->setPrettyPrinting(true);
+        $this->jsonPlus = JSONPlus::$default->setPrettyPrinting(true);
 
         $this->commands = [
             "install" => new InstallCommand($this),

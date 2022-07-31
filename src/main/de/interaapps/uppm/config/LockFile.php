@@ -12,7 +12,7 @@ class LockFile {
     public object|null $namespaceBindings;
     public object|null $directNamespaceBindings;
     public object|null $modules;
-    public array|null $initScripts;
+    public array $initScripts;
 
     public function __construct() {
         $this->namespaceBindings = (object)[];
@@ -38,6 +38,7 @@ class LockFile {
 
 return " . var_export($lockNameSpaces, true) . ";");
 
+        $this->initScripts = array_values($this->initScripts);
         file_put_contents($uppm->getCurrentDir() . "/uppm.locks.json", $this->toJson());
     }
 
