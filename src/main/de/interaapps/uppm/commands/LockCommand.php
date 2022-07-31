@@ -4,10 +4,7 @@ namespace de\interaapps\uppm\commands;
 use de\interaapps\uppm\config\Configuration;
 use de\interaapps\uppm\UPPM;
 
-class LockCommand implements Command {
-    public function __construct(private UPPM $uppm) {
-    }
-
+class LockCommand extends Command {
     public function execute(array $args) {
         $this->uppm->getCurrentProject()->getConfig()->lock($this->uppm, $this->uppm->getCurrentProject()->getLockFile(), ".");
 

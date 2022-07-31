@@ -1,7 +1,7 @@
 <?php
 namespace de\interaapps\uppm\config;
 
-use de\interaapps\uppm\helper\JSONModel;
+use de\interaapps\jsonplus\JSONModel;
 use de\interaapps\uppm\UPPM;
 
 class LockFile {
@@ -35,7 +35,7 @@ class LockFile {
 
 return ".var_export($lockNameSpaces, true).";");
 
-        file_put_contents($uppm->getCurrentDir()."/uppm.locks.json", $this->json());
+        file_put_contents($uppm->getCurrentDir()."/uppm.locks.json", $this->toJson());
     }
 
     private function addRec($dir, $key, &$lockNameSpaces){

@@ -4,10 +4,7 @@ namespace de\interaapps\uppm\commands;
 
 use de\interaapps\uppm\UPPM;
 
-class ServeCommand implements Command {
-    public function __construct(private UPPM $uppm) {
-    }
-
+class ServeCommand extends Command {
     public function execute(array $args) {
         $config = $this->uppm->getCurrentProject()->getConfig();
         $port = $config?->serve?->port ?: 8000;
@@ -15,9 +12,14 @@ class ServeCommand implements Command {
         $directory = $config?->serve?->directory ?: ".";
         $host = $config?->serve?->host ?: "0.0.0.0";
 
-        $this->uppm->getLogger()->info("Starting server on http://$host:$port!");
+        while (is_resource(@fsockopen($host, $port))) {
+            $port++;
+        }
 
-        $exec = "cd $directory\nphp -S $host:$port -t ./ $routerFile";
+        $this->uppm->getLogger()->info("Starting server on §1http://{$host}:§3{$port}§f!");
+        $this->uppm->getLogger()->log("");
+
+        $exec = "cd $directory\nphp -S $host:$port -t ./ ".($routerFile ? escapeshellarg($routerFile) : '');
 
         system($exec);
         exec($exec);

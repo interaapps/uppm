@@ -8,12 +8,7 @@ use de\interaapps\uppm\package\Package;
 use de\interaapps\uppm\UPPM;
 use ZipArchive;
 
-class CreateCommand implements Command {
-    private UPPM $uppm;
-    public function __construct(UPPM $uppm) {
-        $this->uppm = $uppm;
-    }
-
+class CreateCommand extends Command {
     public function execute(array $args) {
         if (count($args) > 0) {
             $name = $args[0];

@@ -4,9 +4,7 @@ namespace de\interaapps\uppm\commands;
 
 use de\interaapps\uppm\UPPM;
 
-class HelpCommand implements Command {
-
-    public function __construct(private UPPM $uppm){}
+class HelpCommand extends Command {
 
     public function execute(array $args) {
         $this->uppm->getLogger()->info("Help list:");

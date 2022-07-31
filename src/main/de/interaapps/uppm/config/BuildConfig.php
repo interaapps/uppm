@@ -1,7 +1,8 @@
 <?php
 namespace de\interaapps\uppm\config;
 
-use de\interaapps\uppm\helper\JSONModel;
+
+use de\interaapps\jsonplus\JSONModel;
 
 class BuildConfig {
     use JSONModel;

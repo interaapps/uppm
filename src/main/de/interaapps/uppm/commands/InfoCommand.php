@@ -1,14 +1,16 @@
 <?php
+
 namespace de\interaapps\uppm\commands;
 
+use de\interaapps\uppm\config\Configuration;
 use de\interaapps\uppm\UPPM;
 
-class InfoCommand implements Command {
-    public function __construct(private UPPM $uppm) {
-    }
+class InfoCommand extends Command {
 
     public function execute(array $args) {
-        var_dump($this->uppm->getCurrentProject()->getConfig());
-        var_dump($this->uppm->getCurrentProject()->getLockFile());
+        $uppmConfig = Configuration::fromJson(file_get_contents(__DIR__."/../../../../../../uppm.json"));;
+
+        $this->uppm->getLogger()->log("§3UPPM-Version: §f" . $uppmConfig->version);
+        $this->uppm->getLogger()->log("§3PHP-Version:  §f" . phpversion());
     }
 }

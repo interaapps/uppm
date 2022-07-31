@@ -8,6 +8,7 @@ use de\interaapps\uppm\commands\CreateCommand;
 use de\interaapps\uppm\commands\GHCCommand;
 use de\interaapps\uppm\commands\HelpCommand;
 use de\interaapps\uppm\commands\InfoCommand;
+use de\interaapps\uppm\commands\ProjectInfoCommand;
 use de\interaapps\uppm\commands\InitCommand;
 use de\interaapps\uppm\commands\InstallCommand;
 use de\interaapps\uppm\commands\LockCommand;
@@ -28,7 +29,7 @@ class UPPM {
 
     public function __construct(private array $args, string|null $dir = null){
         $this->logger = Logger::createEchoLogger();
-        $this->jsonPlus = JSONPlus::createDefault();
+        $this->jsonPlus = JSONPlus::createDefault()->setPrettyPrinting(true);
 
         $this->commands = [
             "install" => new InstallCommand($this),
@@ -37,6 +38,7 @@ class UPPM {
             "autoload" => new AddAutoloadCommand($this),
             "build" => new BuildCommand($this),
             "create" => new CreateCommand($this),
+            "project-info" => new ProjectInfoCommand($this),
             "info" => new InfoCommand($this),
             "help" => new HelpCommand($this),
             "init" => new InitCommand($this),
@@ -57,16 +59,16 @@ class UPPM {
         $config = new Configuration();
         $lockFile = new LockFile();
         if (file_exists($this->currentDir."/uppm.json")) {
-            $config = Configuration::fromJson(file_get_contents($this->currentDir."/uppm.json"));
+            $config = Configuration::fromJson(file_get_contents("$this->currentDir/uppm.json"));
         }
-        array_push($config->repositories, "https://central.uppm.interaapps.de");
+        $config->repositories[] = "https://central.uppm.interaapps.de";
         if (file_exists($this->currentDir."/uppm.locks.json")) {
-            $lockFile = LockFile::fromJson(file_get_contents($this->currentDir."/uppm.locks.json"));
+            $lockFile = LockFile::fromJson(file_get_contents("$this->currentDir/uppm.locks.json"));
         }
-        $this->currentProject = new Project(__DIR__, $config, $lockFile);
+        $this->currentProject = new Project(getcwd(), $config, $lockFile);
     }
 
-    public function start(){
+    public function start(): void {
         if (count($this->args) > 0) {
             foreach ($this->commands as $name => $command) {
                 if (strtolower($name) == $this->args[0]) {
@@ -76,12 +78,9 @@ class UPPM {
                     return;
                 }
             }
-            $this->logger->err("NOT FOUND");
-            $this->commands["help"]->execute([]);
-        } else {
-            $this->logger->err("NOT FOUND");
-            $this->commands["help"]->execute([]);
         }
+        $this->logger->err("NOT FOUND");
+        $this->commands["help"]->execute([]);
     }
 
     public static function main($args) : void {

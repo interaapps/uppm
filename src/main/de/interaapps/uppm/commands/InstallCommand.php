@@ -5,13 +5,7 @@ use de\interaapps\uppm\helper\Web;
 use de\interaapps\uppm\package\Package;
 use de\interaapps\uppm\UPPM;
 
-class InstallCommand implements Command {
-    public function __construct(
-        private UPPM $uppm
-    ) {
-
-    }
-
+class InstallCommand extends Command {
     public function execute(array $args) {
         if (!file_exists($this->uppm->getCurrentDir()."/modules"))
             mkdir($this->uppm->getCurrentDir()."/modules");
@@ -23,6 +17,7 @@ class InstallCommand implements Command {
             $package = Package::getPackage($this->uppm, $split[0], count($split) > 1 ? $split[1] : "latest");
 
             if ($package->download()) {
+                $this->uppm->getLogger()->log("\n\n");
                 $this->uppm->getLogger()->info("Adding to uppm.json->modules");
                 $package->addToConfig();
                 $this->uppm->getLogger()->success("Downloaded $args[0]!");

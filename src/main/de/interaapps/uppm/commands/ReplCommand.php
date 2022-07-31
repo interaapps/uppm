@@ -5,12 +5,7 @@ use de\interaapps\uppm\helper\Logger;
 use de\interaapps\uppm\UPPM;
 use Exception;
 
-class ReplCommand implements Command {
-    private static UPPM $uppm;
-    public function __construct(UPPM $uppm) {
-        self::$uppm = $uppm;
-    }
-
+class ReplCommand extends Command {
     public function execute(array $args) {
         self::$uppm->getLogger()->log(Logger::BLUE."UPPM-Repl on PHP-Version ".phpversion());
         $this->replLoop();

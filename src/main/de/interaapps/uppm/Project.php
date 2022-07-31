@@ -13,10 +13,6 @@ class Project {
                                 private LockFile $lockFile) {
     }
 
-    public function install(Package $package){
-
-    }
-
     public function getConfig(): Configuration {
         return $this->config;
     }
