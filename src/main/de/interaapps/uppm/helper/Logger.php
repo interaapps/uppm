@@ -95,7 +95,7 @@ class Logger {
     private static int $lastLength = 0;
 
     public function loadingBar(float $percentage, string $text = ""): void {
-        $cols = getenv('COLUMNS') ?? 60;
+        $cols = getenv('COLUMNS') ?: 60;
         if ($cols > 60)
             $cols = 60;
 
