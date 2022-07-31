@@ -6,10 +6,10 @@ namespace de\interaapps\uppm\commands;
 class ServeCommand extends Command {
     public function execute(array $args) {
         $config = $this->uppm->getCurrentProject()->getConfig();
-        $port = $config?->serve?->port ?: 8000;
-        $routerFile = $config?->serve?->routerFile ?: "";
-        $directory = $config?->serve?->directory ?: ".";
-        $host = $config?->serve?->host ?: "0.0.0.0";
+        $port = $config?->serve?->port ?? 8000;
+        $routerFile = $config?->serve?->routerFile ?? "";
+        $directory = $config?->serve?->directory ?? ".";
+        $host = $config?->serve?->host ?? "0.0.0.0";
 
         while (is_resource(@fsockopen($host, $port))) {
             $port++;

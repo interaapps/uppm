@@ -10,11 +10,11 @@ class BuildCommand extends Command {
     public function execute(array $args) {
         $config = $this->uppm->getCurrentProject()->getConfig();
         $outputLocation = $this->uppm->getCurrentDir() . "/" . ($config?->build?->outputDir ?? "target");
-        $outputFile = $config?->build?->outputName ?: "{name}-{version}";
+        $outputFile = $config?->build?->outputName ?? "{name}-{version}";
 
-        $ignored = $config?->build?->ignored ?: [];
+        $ignored = $config?->build?->ignored ?? [];
 
-        $run = $config->run->{$config?->build?->run ?: "start"};
+        $run = $config->run->{$config?->build?->run ?? "start"};
 
         $outputFile = str_replace("{name}", $config->name, str_replace("{version}", $config->version, $outputFile)) . ".phar";
 
