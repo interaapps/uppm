@@ -45,7 +45,7 @@ class BuildCommand extends Command {
         $this->uppm->getLogger()->loadingBar(0.6, "Setting stub...");
 
         //$phar->setDefaultStub($run, "/" . $run);
-        $phar->setStub("#!/usr/bin/php \n" . $st);
+        $phar->setStub("#!/usr/bin/env php \n" . $st);
 
         if (file_exists($outputLocation . "/" . $outputFile . ".gz")) {
             unlink($outputLocation . "/" . $outputFile . ".gz");
