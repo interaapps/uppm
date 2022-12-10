@@ -40,7 +40,7 @@ php uppm.phar help
 ```
 ## Globally
 ```shell
-wget -O uppm https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar
+curl -o uppm https://raw.githubusercontent.com/interaapps/uppm/master/target/uppm.phar
 # Installing it on linux globally
 sudo mv uppm /usr/local/bin/uppm
 sudo chmod +x /usr/local/bin/uppm
@@ -55,6 +55,9 @@ uppm help
 ```shell
 # Installing dependencies
 sudo apt install php8.1 php8.1-zip php8.1-json php8.1-phar
+
+# Getting the php.ini location
+php --ini
 
 # Adding phar rule to php.ini (For building projects)
 sudo echo phar.readonly = Off >> /etc/php/8.1/cli/php.ini

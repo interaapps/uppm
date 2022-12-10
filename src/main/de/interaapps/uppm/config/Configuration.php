@@ -40,7 +40,7 @@ class Configuration {
         $this->initScripts = [];
     }
 
-    public function save($uppm): void {
+    public function save(UPPM $uppm): void {
         if (($key = array_search("https://central.uppm.interaapps.de", $this->repositories)) !== false)
             unset($this->repositories[$key]);
         file_put_contents($uppm->getCurrentDir() . "/uppm.json", $this->toJson());
@@ -77,7 +77,7 @@ class Configuration {
         }
 
         if (isset($this->initScripts))
-            $lockFile->initScripts = array_unique(array_merge((array)$lockFile->initScripts, (array)$this->initScripts));
+            $lockFile->initScripts = array_unique(array_merge((array) $lockFile->initScripts, (array)$this->initScripts));
 
         if (isset($this->directNamespaceBindings))
             $lockFile->directNamespaceBindings = (object)array_merge((array)$lockFile->directNamespaceBindings, (array)$this->directNamespaceBindings);
@@ -87,9 +87,15 @@ class Configuration {
             $lockFile->directNamespaceBindings = (object)array_merge((array)$lockFile->directNamespaceBindings, (array)$this->directnamespaces);
 
         if (isset($this->namespaceBindings))
-            $lockFile->namespaceBindings = (object)array_merge((array)$lockFile->namespaceBindings, (array)$this->namespaceBindings);
+            $lockFile->namespaceBindings = (object) array_merge((array) $lockFile->namespaceBindings, (array)$this->namespaceBindings);
 
-        $lockFile->modules = (object)array_merge((array)$lockFile->modules, [$this->name => $this->version]);
+        $lockFile->modules = (object)array_merge((array) $lockFile->modules, [$this->name => $this->version]);
         $lockFile->save($uppm);
+    }
+
+    public static function fromFile(string $name): Configuration|null {
+        if (!file_exists($name))
+            return null;
+        return self::fromJson(file_get_contents($name));
     }
 }

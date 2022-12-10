@@ -62,4 +62,10 @@ return " . var_export($lockNameSpaces, true) . ";");
             }
         }
     }
+
+    public static function fromFile(string $name): LockFile|null {
+        if (!file_exists($name))
+            return null;
+        return self::fromJson(file_get_contents($name));
+    }
 }

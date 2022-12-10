@@ -5,9 +5,17 @@
         "Psr\\Http\\Message": "modules\/psr-http-message\/src",
         "GuzzleHttp\\Psr7": "modules\/guzzlehttp-psr7\/src",
         "Psr\\Http\\Client": "modules\/psr-http-client\/src",
-        "GuzzleHttp": "modules\/guzzlehttp-guzzle\/src"
+        "GuzzleHttp": "modules\/guzzlehttp-guzzle\/src",
+        "de\\interaapps\\ulole\\orm": "modules\/uloleorm\/de\/interaapps\/ulole\/orm",
+        "de\\interaapps\\ulole\\router": "modules\/deverm\/de\/interaapps\/ulole\/router",
+        "de\\interaapps\\ulole\\core": "modules\/ulole-core\/src\/main\/de\/interaapps\/ulole\/core"
     },
-    "directNamespaceBindings": {},
+    "directNamespaceBindings": {
+        "de\\interaapps\\ulole\\orm\\Database": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/Database.php",
+        "de\\interaapps\\ulole\\orm\\ORMModel": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/ORMModel.php",
+        "de\\interaapps\\ulole\\orm\\UloleORM": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/UloleORM.php",
+        "de\\interaapps\\ulole\\orm\\Query": "modules\/uloleorm\/de\/interaapps\/ulole\/orm\/Query.php"
+    },
     "modules": {
         "interaapps\/jsonplus": "1.0.6",
         "guzzlehttp\/promises": "dev-master",
@@ -17,7 +25,10 @@
         "guzzlehttp\/psr7": "dev-master",
         "psr\/http-client": "dev-master",
         "symfony\/deprecation-contracts": "dev-main",
-        "guzzlehttp\/guzzle": "dev-master"
+        "guzzlehttp\/guzzle": "dev-master",
+        "uloleorm": "3.2.2",
+        "deverm": "5.3.0",
+        "ulole-core": "3.2.0"
     },
     "initScripts": [
         "src\/functions_include.php",

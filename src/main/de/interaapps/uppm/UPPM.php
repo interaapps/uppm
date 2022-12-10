@@ -12,7 +12,9 @@ use de\interaapps\uppm\commands\InfoCommand;
 use de\interaapps\uppm\commands\InitCommand;
 use de\interaapps\uppm\commands\InstallCommand;
 use de\interaapps\uppm\commands\LockCommand;
+use de\interaapps\uppm\commands\PackageTreeCommand;
 use de\interaapps\uppm\commands\ProjectInfoCommand;
+use de\interaapps\uppm\commands\RemoveCommand;
 use de\interaapps\uppm\commands\ReplCommand;
 use de\interaapps\uppm\commands\RunCommand;
 use de\interaapps\uppm\commands\ServeCommand;
@@ -45,6 +47,8 @@ class UPPM {
             "init" => new InitCommand($this),
             "lock" => new LockCommand($this),
             "repl" => new ReplCommand($this),
+            "tree" => new PackageTreeCommand($this),
+            "remove" => new RemoveCommand($this),
 
             "ghc" => new GHCCommand($this)
         ];
@@ -56,15 +60,16 @@ class UPPM {
 
         $this->commands["i"] = $this->commands["install"];
         $this->commands["r"] = $this->commands["run"];
+        $this->commands["rm"] = $this->commands["remove"];
 
         $config = new Configuration();
         $lockFile = new LockFile();
         if (file_exists($this->currentDir . "/uppm.json")) {
-            $config = Configuration::fromJson(file_get_contents("$this->currentDir/uppm.json"));
+            $config = Configuration::fromFile("$this->currentDir/uppm.json");
         }
         $config->repositories[] = "https://central.uppm.interaapps.de";
         if (file_exists($this->currentDir . "/uppm.locks.json")) {
-            $lockFile = LockFile::fromJson(file_get_contents("$this->currentDir/uppm.locks.json"));
+            $lockFile = LockFile::fromFile("$this->currentDir/uppm.locks.json");
         }
         $this->currentProject = new Project(getcwd(), $config, $lockFile);
     }
